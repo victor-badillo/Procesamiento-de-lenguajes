@@ -1,9 +1,191 @@
-Procesamiento de Lenguajes, Práctica 2
+Procesamiento de Lenguajes, Práctica 2. Validador simple de la sintaxis de un fichero XML
 
 Víctor Nathanael Badillo Aldama
 
-DESARROLLO
+1.- Introducción
 
-FUNCIONAMIENTO
+El desarrollo de esta práctica consiste en diseñar e implementar un validador simple de la sintaxis de un fichero 
+XML mediante el uso de FLEX y BISON.El analizador imprime por pantalla el resultado del análisis, indicando si hay
+algún fallo, y si lo hay indica en que línea se produce el fallo.Por simplicidad se omite el análisis de ficheros
+DTD o Schema, y sin atributos en las etiquetas XML. El validador termina el análisis al encontrar el primer error.
 
-PECULIARIDADES
+2.- Desarrollo
+
+practica2.l
+===========
+
+En este documento se crean los tokens que consistituyen los símbolos de xml. Se crean disitintas definiciones de 
+expresiones para capturar las distintas partes. La definición para las etiquetas de apertura, cierre y etiqueta va-
+cía son openTag, closetag y emptyTag respectivamente. Estas hacen uso de las definiciones de texto (empieza por le-
+tra o "_") y ws para los espacios en blanco y se encapsulan con los caracteres correspondientes a cada uno, "<>", 
+"</_>", "<_/>".
+
+La definición utlizada para capturar comentarios utiliza comment.
+
+Las definiciones creadas para capturar el contenido de las etiquetas son entity, que captura las entidades de xml, 
+para poder escribir los caracteres especiales y content, que captura el resto del posible contenido.
+
+Para definir el header se utiliza version que captura el trozo de la versión en la cabecera xml, encoding que
+captura el trozo del encoding en la cabecera y header que añade el envoltorio. Se utiliza q para poder utilizar co-
+millas simples o dobles.
+
+En la sección de reglas para cada captura de los símbolos que nos interesan devolvemos un idenitificador que
+consituye el identificador de los tokens, incluso se devuelve un token para el contenido no válido y para este caso
+se indica por pantalla que se ha registrado un caracter no válido y en que línea mostrándolo. Además, para los
+tokens de header, cierre de etiqueta, aperta de etiqueta, etiqueta vacia y contenido no válido se registra su valor
+copiándolo en el campo string de yylval. Para registrar la línea de forma sencilla se utiliza yylineno.
+
+practica2.y
+===========
+
+En este documento se utilizan los tokens en reglas para decidir el comportamiento y validación del archivo captu-
+rando errores si es que los hay.
+
+Primeramente hay 2 formas de ejecutar el código, mediante el el uso de "<" y pasando el archivo como argumento.
+En el main se declara se encuentra esta lógica y se imprime el mensaje de que la sintaxis es correcta, por lo que
+en caso de que haya un error este saltará en cualquier momento antes de llegar a esta parte.
+
+Se ha tomado la decisión de utilizar un stack para capturar errores en ciertos casos por simplicidad y claridad.
+Al utilizar un stack, se necesitan sus funciones básicas como push y pop que se utilizarán más adelante por lo que
+se definen al principio del código. En esta parte del código también se declara el prototipo de la función de
+error , "yyerror", también se reconoce el registro de línea e yylex(). 
+
+Se utilizará la variable rootNode para capturar errores como que no haya una etiquet raíz, que haya más de una o
+ que se repita la etiqueta raíz. Para indicar el tipo de algunos tokens se declara:
+%union{
+   char* string;
+}
+
+Esto con el objetivo de posteriormente manipular estos datos e imprimirlos por pantalla.
+
+Pasando a las reglas, la idea es la siguiente: comienza registrando tokens, esperando que haya sí o sí un token de
+cabecera xml y nada más antes, siendo esto lo primero que se define siempre. Después de la cabecera xml aparecen 
+seguidamente un conjunto de elementos que registramos como provenientes de una lista de elementos.
+
+Estos elementos pueden ser cualquier tipo de token que hemos registrado anteriormente, utilizando una regla más
+para las etiquetas de apertura y cierre , además aportando legibilidad. Al registrar una etiqueta de apertura, se
+mete en el stack dicha etiqueta. En el momento que se encuentra una etiqueta de cierre se saca de la cima del
+stack la última etiqueta de apertura registrada, con el objetivo de compararlas y comprobar que se cierran 
+correctamente estas etiquetas.
+
+Para capturar los errores se utiliza la función yyerro() a la que se le adjunta el correspondiente mensaje de
+error indicando la línea en la que se ha producido el error con el siguiente formato:
+Sintaxis XML incorrecta. Mensaje de error.
+
+En caso de que la sintaxis sea válida se imprime por pantalla el siguiente mensaje:
+Sintaxis XML correcta.
+
+Explicación de los casos de error:
+
+Si sigue habiendo algo en la pila después de procesar toda la lista de elementos significa que queda una etiqueta
+de apertura sin su etiqueta de cierre correspondiente por lo que se indica el error.
+
+Si no se ha registrado alguna etiqueta como nodo raíz quiere decir que no hay nodo raíz, cosa que es obligatoria.
+
+Si lo primero en el archivo registrado es otra cosa que no sea la cabecera, se mete en la regla vacia del axioma S
+indicando el error.
+
+En TAG_OPEN se registra el nodo raíz si todavia no se ha registrado. Si ya hay un nodo registrado como raíz y el 
+stack está vacío quiere decir que se han cerrado todas las etiquetas de apertura hasta es momento por lo que al
+registrar una nueva etiqueta de apertura está queriendo decir que está fuera del nodo raíz, por lo que se indica
+el error respectivo.En el caso de que se hayan pasado estos dos casos se compara la etiqueta de apetura nueva con
+el nodo registrado como nodo raíz para capturar el caso de que se haya repetido el nombre del nodo raíz, cosa que 
+es incorrecta.
+
+En TAG_CLOSE se saca del stack la etiqueta de la cima. Si no se pudo sacar nada del stack quiere decir que hay
+una eitqueta de cierre sin que exista una etiqueta de apetura anterior a esta, por lo que hay una etiqueta de
+cierre sin su etiqueta de apertura correspondiente.En el caso de que se pudiese obtener una etiqueta del stack, 
+se compara esta con la etiqueta de cierre y si difieren se indica el error.
+
+En el caso de que se encuentre lo que se considera contenido de etiquetas y el stack esté vacío se indica el error
+de que no puede haber contenido fuera de las etiquetas ya que si el stack está vacío, quiere decir que se ha
+cerrado el nodo raíz.
+
+Si se encuentra una etiqueta vacía podemos encontrar 2 casos de error. Primeramente si el stack está vacío y no se
+ha registrado ningún nodo raíz se registra este como el nodo raíz. En el caso de que ya haya un nodo raiz y el 
+stack esté vacío indicamos el error de que no puede haber más de un nodo raíz. Como en la etiqueta de apertura,
+registramos el posible caso de que la etiqueta encontrada coincida con la etiqueta considerada como nodo raíz.
+
+Por último se registran los casos en los que se encuentre contenido no válido y que haya una cabecera después de
+la primera línea del documento.
+ 
+
+3.- Funcionamiento
+
+Junto con este código se adjunta un MakeFile con el que se puede ejecutar de manera sencilla y cómoda unos
+ejemplos de prueba para comprobar el funciomiento de la implementación.Son 13 los ejemplos de prueba que se
+proporcionan. 12 de estos 13 ejemplos muestran cada uno de los errores y el último muestra un ejemplo válido.La 
+salida esperada para estos ejemplos es la siguiente:
+
+prueba1.xml
+
+prueba2.xml
+
+prueba3.xml
+
+prueba4.xml
+
+prueba5.xml
+
+prueba6.xml
+
+prueba7.xml
+
+prueba8.xml
+
+prueba9.xml
+
+prueba10.xml
+
+prueba11.xml
+
+prueba12.xml
+
+prueba13.xml
+
+
+4.- Consideraciones
+
+La versión xml se considera que va a ser siempre la 1.0, pero si se quisiese incluir otras posibles versiones, 
+habría que introducir un regla para los dígitos. Esta se omite por simplicidad.
+Se habilita la posibilidad de no registrar un encoding.
+En la cabecera puede haber espacios en blanco y saltos de línea, estos se tienen en cuenta.
+El registro de entidades incluye también el reconocimiento en decimal y en hexadecimal. Al tratarse de realizar
+un validador simple solo se registran las entidades básicas, " ' & < > .
+Se ha tomado la decisión de que si una etiqueta no es válida, directamente no se registra como etiqueta, por lo que
+un caso como "<3></3>" devolverá que no hay contenido no válido devolviendo "<" ya que este es el texto que captura
+el lexer.
+
+Se utiliza un tamaño de stack de 6000.
+No se indica la línea de error en el caso de error de que no haya nodo raíz o que lo primero definido en el archi-
+vo no sea la cabecera xml porque no tiene sentido indicar una línea de error.
+Se utiliza la función trim_right() para quitar los espacios de las tags válidas. Esto se hace para simplificar y 
+poder comparar etiquetas correctamente.
+Para comparar la etiqueta vacia con el nodo raíz se manipula para poder comparar.
+Al utilizar un stack al comparar etiquetas de apertura y cierre se mostrará que no coinciden las dos últimas
+etiquetas. Esto tambien se podría interpretar como que la etiqueta encapsulada no tiene su correspondiente eti-
+queta de cierre. En esta implementación se ha decidido registrar el error de esta forma por simplicidad, siendo
+igualmente válida.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
