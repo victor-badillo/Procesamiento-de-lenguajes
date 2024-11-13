@@ -41,9 +41,6 @@ void stack_clear() {
     }
 }
 
-int stack_is_even() {
-    return (stack_top + 1) % 2 == 0;
-}
 
 char* trim_right(char *str) {
     if (str == NULL || strlen(str) == 0) return str;
@@ -137,7 +134,7 @@ element:
     WS
    | COMMENT
    | CONTENT {
-   	if(stack_is_even() && stack_is_empty() ){
+   	if(stack_is_empty()){
    	   char err[256];
            sprintf(err, "Error en línea %d: no puede haber texto fuera de las etiquetas",yylineno-1);
     	   yyerror(err);
