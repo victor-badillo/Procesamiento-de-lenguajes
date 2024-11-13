@@ -1,2 +1,5 @@
 lex.yy.c
 practica1
+practica2
+*.tab.c
+*.tab.h
