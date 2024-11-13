@@ -1,0 +1,6 @@
+Probando palabras, espacios y caracteres:
+hola	esta	es la 
+ultima prueba		. Probando letras ñ Ñ ç Ç
+
+La última línea...
+cadena a2ki?-)7 es una palabra válida

@@ -1,0 +1,65 @@
+Procesamiento de Lenguajes, Práctica 1. Analizador estadístico de textos con FLEX
+
+Víctor Nathanael Badillo Aldama
+
+
+1.- Introducción
+
+El desarrollo de esta práctica consiste en diseñar e implementar mediante FLEX un analizador estadístico de textos.
+Este analizador registra el número total de: caracteres, palabras, palabras en mayúsculas, palabras en minúsculas, 
+palabras numéricas y frases. Los caracteres son todos los posibles excepto espacios y tabulaciones, palabras son
+las que no contienen espacios ni tabulaciones, las palabras en mayúsculas y minúsculas tienen que estar 
+completamente constituidas por estas y una frase es una secuencia de palabras finalizadas por ".".
+
+
+2.- Desarrollo
+
+En la sección de código se realiza la declaración del contador como varaible global para cada uno de los campos a
+medir asignando el valor inicial de estos a 0. Seguidamente se crean las definiciones. 
+
+Para los números se declara digito para capturar cualquier digito y con esta definicion se declara la definición
+para número que capturará todos los números.Podría hacerlo sin dígito pero se utiliza para que el código sea más
+legible. De la misma forma las siguientes definiciones se crean con una buena claridad y legibilidad.
+
+Las palabras mayúsculas hacen uso de mayus que captura las letras maýusculas y wordMayus cualquier palabra mayús-
+cula. Las palabras minúsculas siguen el mismo mecanismo con minus y wordMinus. 
+
+La definición word captura cualquier cosa que no sea una tabulación, un salto de línea o un punto.
+
+frase se utiliza para capturar las frases y finalmente ws se utiliza para capturar los espacios en blanco e
+ignorarlos para que no salgan por pantalla al no capturarse.
+
+En la sección de reglas, al capturar alguna de las definiciones anteriores se aumenta el contador de caracteres
+en todas excepto para los espacios en blanco. También se aumenta el contador de palabras excepto para frase y ws
+ya que esto es justo lo que no incluye una palabra. Para cada regla se aumenta su respectivo contador.
+
+Finalmente en la sección de codigo se imprime por pantalla el resultado del análisis con el siguiente formato:
+CARACTERES=x PALABRAS=x MAYÚSCULAS=x MINÚSCULAS=x NÚMEROS=x FRASES=x
+
+
+3.- Funcionamiento
+
+Junto con este código se adjunta un MakeFile con el que se puede ejecutar de manera sencilla y cómoda unos
+ejemplos de prueba para comprobar el funciomiento de la implementación.Son 4 los ejemplos de prueba que se
+proporcionan y su salida esperada es la siguiente:
+
+prueba1.txt
+CARACTERES=45 PALABRAS=7 MAYÚSCULAS=0 MINÚSCULAS=0 NÚMEROS=5 FRASES=0
+
+prueba2.txt
+CARACTERES=138 PALABRAS=26 MAYÚSCULAS=11 MINÚSCULAS=13 NÚMEROS=0 FRASES=0
+
+prueba3.txt
+CARACTERES=210 PALABRAS=44 MAYÚSCULAS=0 MINÚSCULAS=39 NÚMEROS=0 FRASES=6
+
+prueba4.txt
+CARACTERES=135 PALABRAS=26 MAYÚSCULAS=2 MINÚSCULAS=18 NÚMEROS=0 FRASES=2
+
+
+4.- Consideraciones
+
+La defición para números captura números reales y también negativos.
+No se incluyen los "." en la definición de palabra para capturar las frases
+Las palabras mayúsculas y minúsculas incluyen tildes y las letras ñ, Ñ, ç, Ç.
+Una frase puede acabar en puntos suspensivos por lo que una frase acabada en ... cuenta 1 sola frase.
+

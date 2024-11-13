@@ -1,0 +1,8 @@
+Probando palabras y frases:
+frase: es una palabra y no minúscula
+FRASE: lo mismo
+no pasa igual con manzana. es una minuscula y un frase después
+una frase más...
+hasta aqui hay dos frases
+. . .. tres frases más
+Este línea suma unas siete palabras más.
