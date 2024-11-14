@@ -118,7 +118,7 @@ proporcionan. 12 de estos 13 ejemplos muestran cada uno de los errores y el últ
 salida esperada para estos ejemplos es la siguiente:
 
 prueba1.xml
-Sintaxis XML incorrecta. Error en línea 1: etiqueta "<root>" sin cerrar.
+Sintaxis XML incorrecta. Error en línea 3: etiqueta "<root>" sin cerrar.
 
 prueba2.xml
 Sintaxis XML incorrecta. Error: debe haber al menos un nodo raiz.
