@@ -118,30 +118,43 @@ proporcionan. 12 de estos 13 ejemplos muestran cada uno de los errores y el últ
 salida esperada para estos ejemplos es la siguiente:
 
 prueba1.xml
+Sintaxis XML incorrecta. Error en línea 1: etiqueta "<root>" sin cerrar.
 
 prueba2.xml
+Sintaxis XML incorrecta. Error: debe haber al menos un nodo raiz.
 
 prueba3.xml
+Sintaxis XML incorrecta. Error: lo primero definido en un archivo XML debe ser la cabecera XML.
 
 prueba4.xml
+Sintaxis XML incorrecta. Error en línea 5: no puede haber mas de un nodo raiz, etiqueta incorrecta: "<roote2>".
 
 prueba5.xml
+Sintaxis XML incorrecta. Error en línea 5: nodo raiz repetido, "<root>".
 
 prueba6.xml
+Sintaxis XML incorrecta. Error en línea 2: etiqueta de cierre "</a>" sin etiqueta de apertura correspondiente.
 
 prueba7.xml
+Sintaxis XML incorrecta. Error en línea 7: etiqueta de cierre "</cierre>" no corresponde a "<root>".
 
 prueba8.xml
+Sintaxis XML incorrecta. Error en línea 2: no puede haber texto fuera de las etiquetas
 
 prueba9.xml
+Sintaxis XML incorrecta. Error en línea 5: no puede haber mas de un nodo raiz, etiqueta incorrecta: "<incorrecto/>".
 
 prueba10.xml
+Sintaxis XML incorrecta. Error en línea 4: nodo raiz repetido, "<root/>".
 
 prueba11.xml
+Sintaxis XML incorrecta. Error en línea 4: contenido no válido: "&".
 
 prueba12.xml
+Sintaxis XML incorrecta. Error en línea 4: cabecera xml declarada en lugar incorrecto "<?xml version="1.0" encoding="UTF-8"?>".
 
 prueba13.xml
+Sintaxis XML correcta.
 
 
 4.- Consideraciones
