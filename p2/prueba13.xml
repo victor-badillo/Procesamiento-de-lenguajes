@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<!-- Se ha omitido 
+el encoding -->
+<root>
+    <name>Víctor</name>
+    <surname>Badillo</surname>
+    <age>21</age>
+    <computer_science/>
+</root>
+<!-- El archivo es correcto-válido -->
