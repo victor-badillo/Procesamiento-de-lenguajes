@@ -1,0 +1,3 @@
+Proyecto, Analizador y generador de consultas sobre tickets de la compra
+
+Víctor Nathanael Badillo Aldama
