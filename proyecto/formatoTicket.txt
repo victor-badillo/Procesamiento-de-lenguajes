@@ -1,10 +1,8 @@
   **     GADIS O BURGO      **
       AV. JUAN CARLOS I
      MERCARTABRIA,S.L.U.
-  NIF:B15535552 Tlf:981654595
 --------------------------------
-TIENDA:  089 CAJ:15 N.FRA:T18191
-16/11/2024   18:29    CJR:090895
+16/11/2024  18:29  Tlf:981654595
 --------------------------------
 CERVEZA 1906 RESER          1.82
 FONTER C/G. 1L              0.99
@@ -12,32 +10,13 @@ FONTER C/G. 1L              0.99
 PULEVA OMEGA-3              1.59
 PULEVA OMEGA-3              1.59
 HARINA/MAIZ PAN 1KG         2.40
-
-
-       TOTAL......:      9.38
-    
-       TARJETAS...:      9.38
-    
+--------------------------------
+TOTAL......:      9.38S
+--------------------------------
      BASE   IVA  CUOTA    TOTAL
  ======== ===== ====== ========
      1.50 21.00   0.32     1.82
      4.69 10.00   0.47     5.16
      2.35  2.00   0.05     2.40
-     
- =  DATOS OPERACION  TARJETA  =
- =     VISA CONTACTLESS       =
- =   OPERACION  : VENTA       =
- =      (COPIA  CLIENTE)      =
- TARJETA....: 123456******7890
- TIPO.......: VISA DEBIT
- N.AUTORIZAC: 123456
- N.COMERCIO.: 123456789
- N.OPERACION: 123456
- AID.APLICAC: A0000000012345
- NOMBRE DDF.: A0000000012345
- ID.TERMINAL: 00012345678
- C.RESPUESTA: 00
- IMPORTE EUR: 9.38
-
-
+--------------------------------
   *  GRACIAS POR  SU VISITA  *
