@@ -1,4 +1,4 @@
-FUENTE = proyecto
+FUENTE = ticket
 PRUEBA = ticket1.txt
 LIB = lfl
 
