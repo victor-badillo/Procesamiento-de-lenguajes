@@ -11,7 +11,7 @@ PULEVA OMEGA-3              1.59
 PULEVA OMEGA-3              1.59
 HARINA/MAIZ PAN 1KG         2.40
 --------------------------------
-TOTAL......:      9.38S
+TOTAL......:      9.38
 --------------------------------
      BASE   IVA  CUOTA    TOTAL
  ======== ===== ====== ========
