@@ -4,6 +4,9 @@
 #include <string.h>
 #include <ctype.h>
 #include <math.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #define MAX_PRODUCTS 100
 
@@ -114,6 +117,8 @@ void add_product(const char *product_name, double price) {
 
 
 void writeCSV(){
+
+   fprintf(output, "Supermercado,Fecha,Total\n");
    fprintf(output, "\"%s\",%s,%s\n", supermarket_CSV, date_CSV, total_CSV);
    fprintf(output, "Producto,Cantidad,Precio\n");
    for (int i = 0; i < product_count; i++) {
@@ -124,6 +129,13 @@ void writeCSV(){
    }
    
    
+}
+
+void createDirectory(const char *directory) {
+    struct stat st = {0};
+    if (stat(directory, &st) == -1) {
+        mkdir(directory, 0700); 
+    }
 }
 
 %}
@@ -372,9 +384,12 @@ extern FILE *yyin;
         fprintf(stderr, "Error: El archivo debe tener el formato ticketX.txt\n");
         return 1;
     }
+    
+    const char *directory = "ticketsData";
+    createDirectory(directory);
 
     char nombreSalida[256];
-    snprintf(nombreSalida, sizeof(nombreSalida), "ticket%d.csv", numeroTicket);
+    snprintf(nombreSalida, sizeof(nombreSalida), "%s/ticket%d.csv", directory,numeroTicket);
 
 
     output = fopen(nombreSalida, "w");
@@ -383,7 +398,7 @@ extern FILE *yyin;
         return 1;
     }
 
-    fprintf(output, "Supermercado,Fecha,Total\n");
+    
 	
     yyin = fopen(argv[1], "r");
     
