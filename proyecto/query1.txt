@@ -1,0 +1,16 @@
+caro("TOMATE",ticket1)
+barato("LECHE",ticket2)
+ordenar(mayor,ticket3)
+total(ticket0)
+media(ticket1)
+fecha(ticket76)
+supermercado(ticket11)
+desdeHasta(10/10/2024T10:23,11/12/2024T10:50)
+totalProducto("ATUN",ticket33)
+precio("TOMATE",ticket1)
+and
+or
+AND
+OR
+aNd
+oR

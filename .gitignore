@@ -3,5 +3,6 @@ practica1
 practica2
 ticket
 ticketsData/
+query
 *.tab.c
 *.tab.h
