@@ -2,5 +2,6 @@ lex.yy.c
 practica1
 practica2
 ticket
+ticketsData/
 *.tab.c
 *.tab.h
