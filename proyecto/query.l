@@ -1,13 +1,15 @@
 %{
 #include <stdio.h>
 #include <string.h>
+#include "query.tab.h"
+char lexeme[256];
 %}
 %option yylineno
 
 
 ws [ \n\t]+
-openbracket "("
-closebracket ")"
+lbr "("
+rbr ")"
 comma ","
 text [0-9A-ZÑÇ,./-]+
 product_text \"({text}+([ ]{1})?)+\"
@@ -25,32 +27,45 @@ supermercado (?i:supermercado)
 desdehasta (?i:desdehasta)
 totalproducto (?i:totalproducto)
 precio (?i:precio)
+verticket (?i:verticket)
+help(?i:help)
 
 and (?i:and)
 or (?i:or)
 
+lt "<"
+gt ">"
+eq "=="
+num [0-9]+(\.[0-9]{1,2})?
+
 
 %%
 {ws}		{ }
-{openbracket}	{ printf("(");  }
-{closebracket}  { printf(")\n"); }
-{comma}		{ printf(","); }
-{caro}		{ printf("CARO"); }
-{barato}  	{ printf("BARATO"); }
-{orden}		{ printf("mayor/menor"); }
-{ordenar}  	{ printf("ORDENAR"); }
-{total}		{ printf("TOTAL");  }
-{media}		{ printf("MEDIA"); }
-{fecha}		{ printf("FECHA"); }
-{supermercado}	{ printf("SUPERMERCADO"); }
-{desdehasta}	{ printf("DESDEHASTA"); }
-{totalproducto}	{ printf("TOTALPRODUCTO");  }
-{precio}	{ printf("PRECIO");  }
-{and}		{ printf("AND\n");  }
-{or}		{ printf("OR\n");}
-{fechaform}	{ printf("fechaXXX"); }
-{ticket}	{ printf("ticketXXX"); }
-{product_text}	{ printf("productoXXX"); }
-.               { printf("Carácter desconocido: %s, en la línea %d\n", yytext, yylineno);}
+{lbr}		{ printf("("); return LBR; }
+{rbr}  		{ printf(")\n"); return RBR; }
+{comma}		{ printf(","); return COMMA; }
+{lt}		{ printf("<"); return LT; }
+{gt}		{ printf(">"); return GT; }
+{eq}		{ printf("=="); return EQ; }
+{num}		{ yylval.numValue = atof(yytext); printf("NUM"); return NUM; }
+{caro}		{ printf("CARO"); return CARO; }
+{barato}  	{ printf("BARATO"); return BARATO; }
+{orden}		{ strcpy(lexeme, yytext); yylval.str = strdup(lexeme); printf("mayor/menor"); return ORDEN; }
+{ordenar}  	{ printf("ORDENAR"); return ORDENAR; }
+{total}		{ printf("TOTAL"); return TOTAL;  }
+{media}		{ printf("MEDIA"); return MEDIA; }
+{fecha}		{ printf("FECHA"); return FECHA;  }
+{supermercado}	{ printf("SUPERMERCADO"); return SUPERMERCADO; }
+{desdehasta}	{ printf("DESDEHASTA"); return DESDE_HASTA; }
+{totalproducto}	{ printf("TOTALPRODUCTO");  return TOTAL_PRODUCTO; }
+{verticket}	{ printf("VERTICKET"); return VER_TICKET; }
+{help}		{ printf("HELP");  return HELP;}
+{precio}	{ printf("PRECIO");  return PRECIO; }
+{and}		{ printf("AND\n"); return AND; }
+{or}		{ printf("OR\n"); return OR;  }
+{fechaform}	{ strcpy(lexeme, yytext); yylval.str = strdup(lexeme); printf("fechaXXX"); return FECHA_FORM; }
+{ticket}	{ strcpy(lexeme, yytext); yylval.str = strdup(lexeme); printf("ticketXXX"); return TICKET; }
+{product_text}	{ strcpy(lexeme, yytext); yylval.str = strdup(lexeme); printf("productoXXX"); return PRODUCT; }
+.               { printf("Carácter desconocido: %s, en la línea %d\n", yytext, yylineno); }
 %%
 
