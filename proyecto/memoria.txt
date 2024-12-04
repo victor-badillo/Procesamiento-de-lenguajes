@@ -1,3 +1,9 @@
 Proyecto, Analizador y generador de consultas sobre tickets de la compra
 
 Víctor Nathanael Badillo Aldama
+
+
+Considetaciones:
+
+Al encontrar un error en el análisis de los tickets para automaticamente
+Si en algun momento hay un error de sintaxis, el archivo csv generado se elimina
