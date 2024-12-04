@@ -276,7 +276,7 @@ element:
             yyerror(err);
         }
         
-        double expected_total = base + (base * iva);
+        double expected_total = base + rounded_cuota;
         if (expected_total != total) {
             char err[256];
             sprintf(err, "Error en línea %d: La suma de base + IVA (%.2f) no coincide con el total proporcionado %.2f", yylineno, expected_total, total);
