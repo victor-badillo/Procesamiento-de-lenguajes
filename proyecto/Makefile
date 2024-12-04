@@ -1,5 +1,5 @@
 FUENTE = ticket
-PRUEBA = ticketsRaw/ticket1.txt
+PRUEBA = ticketsRaw
 LIB = lfl -lm
 
 all: compile run2

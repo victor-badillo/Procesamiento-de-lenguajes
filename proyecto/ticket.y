@@ -7,6 +7,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <dirent.h>
 
 #define MAX_PRODUCTS 100
 
@@ -23,6 +24,7 @@ int product_count = 0;
 char *supermarket_CSV;
 char *date_CSV;
 char *total_CSV;
+char *date_time_copy;
 
 extern int yylineno;
 void yyerror(const char *s);
@@ -115,6 +117,20 @@ void add_product(const char *product_name, double price) {
     }
 }
 
+double round2(double value){
+    return round(value * 100.0) / 100.0;
+}
+
+void trim_right(char *str) {
+    int length = strlen(str);
+    
+    // Recorre desde el final hacia el principio y elimina los espacios
+    while (length > 0 && isspace(str[length - 1])) {
+        str[length - 1] = '\0';
+        length--;
+    }
+}
+
 
 void writeCSV(){
 
@@ -122,6 +138,7 @@ void writeCSV(){
    fprintf(output, "\"%s\",%s,%s\n", supermarket_CSV, date_CSV, total_CSV);
    fprintf(output, "Producto,Cantidad,Precio\n");
    for (int i = 0; i < product_count; i++) {
+        trim_right(product_list[i].product_name);
         fprintf(output, "%s,%d,%.2f\n",
                 product_list[i].product_name,
                 product_list[i].quantity,
@@ -131,12 +148,6 @@ void writeCSV(){
    
 }
 
-void createDirectory(const char *directory) {
-    struct stat st = {0};
-    if (stat(directory, &st) == -1) {
-        mkdir(directory, 0700); 
-    }
-}
 
 %}
 %union {
@@ -151,7 +162,6 @@ ticket:
     HEADER after_header {
         supermarket_CSV = strdup($1);
         writeCSV();
-        fclose(output);
     }
     | /* vacio */{
         yyerror("Error: lo primero definido en un ticket debe ser la cabecera con el supermercado, calle y empresa.");
@@ -176,7 +186,7 @@ date_hour_tlf:
     	   yyerror(err); 
     	}
     	 // Copiar la cadena de fecha y hora para evitar modificar la original
-        char *date_time_copy = strdup($1);
+        date_time_copy = strdup($1);
         if (date_time_copy == NULL) {
             yyerror("Error al copiar la fecha y hora.");
         }
@@ -194,8 +204,7 @@ date_hour_tlf:
         snprintf(formatted_date, sizeof(formatted_date), "%sT%s", date, time);
 
         date_CSV = strdup(formatted_date);
-
-        free(date_time_copy); 
+ 
         
     	
     }
@@ -249,7 +258,7 @@ total_price_line:
             accumulated_price += product_list[i].total_price;
         }
         
-        if (total_price != accumulated_price) {
+        if (round2(total_price) != round2(accumulated_price)) {
             char err[256];
             sprintf(err, "Error en línea %d: precio total de compra [%.2f] no es igual a la suma de precios de los productos de la compra [%.2f]", yylineno, total_price, accumulated_price);
     	    yyerror(err);
@@ -341,6 +350,13 @@ end:
 
 %%
 
+void createDirectory(const char *directory) {
+    struct stat st = {0};
+    if (stat(directory, &st) == -1) {
+        mkdir(directory, 0700); 
+    }
+}
+
 void yyerror(const char *error) {
     fprintf(stderr, "Sintaxis de ticket incorrecta. %s\n", error);
     exit(0);
@@ -375,40 +391,60 @@ extern FILE *yyin;
 
 
     if (argc != 2) {
-        fprintf(stderr, "Uso: %s <archivo_entrada.txt>\n", argv[0]);
-        return 1;
-    }
-
-    int numeroTicket = obtenerNumeroTicket(argv[1]);
-    if (numeroTicket == -1) {
-        fprintf(stderr, "Error: El archivo debe tener el formato ticketX.txt\n");
+        fprintf(stderr, "Uso: %s <directorio>\n", argv[0]);
         return 1;
     }
     
-    const char *directory = "ticketsData";
-    createDirectory(directory);
-
-    char nombreSalida[256];
-    snprintf(nombreSalida, sizeof(nombreSalida), "%s/ticket%d.csv", directory,numeroTicket);
-
-
-    output = fopen(nombreSalida, "w");
-    if (!output) {
-        perror("No se pudo abrir el archivo de salida");
+    const char *directorioEntrada = argv[1];
+    const char *directorioSalida = "ticketsData";
+    
+    createDirectory(directorioSalida);
+    
+    DIR *dir = opendir(directorioEntrada);
+    if (dir == NULL) {
+        perror("No se pudo abrir el directorio");
         return 1;
     }
+    
+    struct dirent *entry;
+    while ((entry = readdir(dir)) != NULL) {
 
-    
-	
-    yyin = fopen(argv[1], "r");
-    
-    if (yyin == NULL) {
-       printf("ERROR: No se ha podido abrir el fichero %s.\n", argv[1]);
-    } else {
-       yyparse();
-       fclose(yyin);
+        if (strstr(entry->d_name, ".txt") != NULL) {
+            int numeroTicket = obtenerNumeroTicket(entry->d_name);
+            if (numeroTicket == -1) {
+                fprintf(stderr, "Error: El archivo %s no tiene el formato esperado ticketX.txt\n", entry->d_name);
+                continue;
+            }
+
+            char nombreSalida[256];
+            snprintf(nombreSalida, sizeof(nombreSalida), "%s/ticket%d.csv", directorioSalida, numeroTicket);
+
+            output = fopen(nombreSalida, "w");
+            if (!output) {
+                perror("No se pudo abrir el archivo de salida");
+                continue;
+            }
+
+            char archivoEntrada[256];
+            snprintf(archivoEntrada, sizeof(archivoEntrada), "%s/%s", directorioEntrada, entry->d_name);
+            yyin = fopen(archivoEntrada, "r");
+            
+            if (!yyin) {
+                perror("No se pudo abrir el archivo de entrada");
+                fclose(output);
+                continue;
+            }
+
+            yyparse();
+            fclose(yyin);
+            fclose(output);
+            product_count = 0;  // Resetear el contador de productos
+    	    memset(product_list, 0, sizeof(product_list));
+        }
     }
-   
+
+    closedir(dir);
+    
     
     printf("Sintaxis de ticket correcta.\n");
     return 0;
