@@ -16,6 +16,10 @@ typedef struct {
 Product product_list[MAX_PRODUCTS];
 int product_count = 0; 
 
+char *supermarket_CSV;
+char *date_CSV;
+char *total_CSV;
+
 extern int yylineno;
 void yyerror(const char *s);
 extern int yylex();
@@ -107,6 +111,20 @@ void add_product(const char *product_name, double price) {
     }
 }
 
+
+void writeCSV(){
+   fprintf(output, "\"%s\",%s,%s\n", supermarket_CSV, date_CSV, total_CSV);
+   fprintf(output, "Producto,Cantidad,Precio\n");
+   for (int i = 0; i < product_count; i++) {
+        fprintf(output, "%s,%d,%.2f\n",
+                product_list[i].product_name,
+                product_list[i].quantity,
+                product_list[i].total_price);
+   }
+   
+   
+}
+
 %}
 %union {
     char *str;
@@ -118,7 +136,8 @@ void add_product(const char *product_name, double price) {
 
 ticket:
     HEADER after_header {
-        fprintf(output, "%s,",$1);
+        supermarket_CSV = strdup($1);
+        writeCSV();
         fclose(output);
     }
     | /* vacio */{
@@ -143,7 +162,7 @@ date_hour_tlf:
            sprintf(err, "Error en línea %d: El nummero de telefono debe tener 9 digitos.", yylineno);
     	   yyerror(err); 
     	}
-    	fprintf(output, "%s,",$1);
+    	date_CSV = strdup($1);
     	
     }
     | /* vacio */{
@@ -203,7 +222,7 @@ total_price_line:
     	    yyerror(err);
         }
         
-        fprintf(output, "%s\nProducto,Cantidad,Precio\n",$2);
+        total_CSV = strdup($2);
     }
     | /* vacio */{
     	char err[256];
@@ -340,7 +359,7 @@ extern FILE *yyin;
         return 1;
     }
 
-    fprintf(output, "Supermercado,Fecha,Total\n\nProducto,Cantidad,Precio\n");
+    fprintf(output, "Supermercado,Fecha,Total\n");
 	
     yyin = fopen(argv[1], "r");
     
