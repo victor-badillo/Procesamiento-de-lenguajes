@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <math.h>
 
 #define MAX_PRODUCTS 100
 
@@ -15,7 +16,7 @@ typedef struct {
 Product product_list[MAX_PRODUCTS];
 int product_count = 0; 
 
-extern int yylex();
+extern int yylineno;
 void yyerror(const char *s);
 extern int yylex();
 FILE *output;
@@ -212,8 +213,7 @@ total_price_line:
 ;
 
 after_total_price_line:
-   SEPARATE taxes{
-   }
+   SEPARATE taxes{ }
    | /* vacio */{
       yyerror("Error: debe haber una separacion (-) entre el total y la seccion de impuestos");
    }
@@ -242,7 +242,29 @@ calculate:
 
 
 element: 
-    PRICE PRICE PRICE PRICE{
+    PRICE PRICE PRICE PRICE {
+       double base = atof($1);
+       double iva = atof($2) / 100.0;
+       double cuota = atof($3);
+       double total = atof($4);
+       
+       double expected_cuota = base * iva;
+       double rounded_cuota = ceil(expected_cuota * 100) / 100.0;
+       
+       if (rounded_cuota != cuota) {
+            char err[256];
+            sprintf(err, "Error en línea %d: La cuota calculada %.2f no coincide con la cuota proporcionada %.2f", yylineno, rounded_cuota, cuota);
+            yyerror(err);
+        }
+        
+        double expected_total = base + (base * iva);
+        if (expected_total != total) {
+            char err[256];
+            sprintf(err, "Error en línea %d: La suma de base + IVA (%.2f) no coincide con el total proporcionado %.2f", yylineno, expected_total, total);
+            yyerror(err);
+        }
+
+       
     }
     | after_taxes {}
 ;
@@ -256,16 +278,16 @@ after_taxes:
 ;
 
 end:
-   GOODBYE{ }
+   GOODBYE { }
    | /* vacio */{
        yyerror("Error: Falta la linea de agradecimiento y despedida");
    }
-
+;
 
 
 %%
 
-void yyerror(const char *s) {
+void yyerror(const char *error) {
     fprintf(stderr, "Sintaxis de ticket incorrecta. %s\n", error);
     exit(0);
 }

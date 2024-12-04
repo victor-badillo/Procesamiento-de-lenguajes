@@ -41,7 +41,7 @@ header {supermarket}[0-9A-ZÑÇ,./ \n]+
 {price}		{ strcpy(lexeme, yytext); yylval.str = strdup(lexeme); printf("PRICE\n"); return PRICE;}
 {negativePrice}	{ strcpy(lexeme, yytext); yylval.str = strdup(lexeme);  printf("NEGATIVE_PRICE\n"); return NEGATIVE_PRICE; }
 {goodbye}	{ printf("GOODBYE\n"); return GOODBYE; }
-{product}	{ strcpy(lexeme, yytext); yylval.str = strdup(lexeme); printf("PRODUCT\n"); return PRODUCT}
-.               { printf("Carácter desconocido: %s, en la línea %d\n", yytext, yylineno); return NO_VALID}
+{product}	{ strcpy(lexeme, yytext); yylval.str = strdup(lexeme); printf("PRODUCT\n"); return PRODUCT; }
+.               { printf("Carácter desconocido: %s, en la línea %d\n", yytext, yylineno); return NO_VALID; }
 %%
 

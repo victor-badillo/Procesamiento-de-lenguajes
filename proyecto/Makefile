@@ -1,13 +1,13 @@
 FUENTE = ticket
 PRUEBA = ticket1.txt
-LIB = lfl
+LIB = lfl -lm
 
 all: compile run2
 
 compile:
 	flex $(FUENTE).l
 	bison -o $(FUENTE).tab.c $(FUENTE).y -yd
-	gcc -o $(FUENTE) lex.yy.c $(FUENTE).tab.c -$(LIB) -ly
+	gcc -o $(FUENTE) lex.yy.c $(FUENTE).tab.c -$(LIB)
 
 run:
 	./$(FUENTE) < $(PRUEBA)
