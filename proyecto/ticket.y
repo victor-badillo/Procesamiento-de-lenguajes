@@ -111,10 +111,8 @@ void add_product(const char *product_name, double price) {
     char *str;
 }
 
-%token <str> HEADER PURCHASEDATE TOTALPURCHASE PRICE PRODUCT PHONE_NUMBER 
-%token SEPARATE SEPARATE2 BASE IVA CUOTA TOTAL NEGATIVE_PRICE GOODBYE NO_VALID
-%type <str> header purchaseDate products prices goodbye total telefono
-
+%token <str> HEADER PURCHASEDATE TOTALPURCHASE PRICE PRODUCT PHONE_NUMBER NEGATIVE_PRICE 
+%token SEPARATE SEPARATE2 BASE IVA CUOTA TOTAL GOODBYE NO_VALID
 %%
 
 ticket:
@@ -190,7 +188,7 @@ after_products_list:
 ;
 
 total_price_line:
-    TOTAL_PURCHASE PRICE after_total_price_line {
+    TOTALPURCHASE PRICE after_total_price_line {
     
         double total_price = atof($2);
         double accumulated_price = 0.0;
@@ -222,7 +220,7 @@ after_total_price_line:
 ;
 
 taxes:
-    BASE IVA COUTA TOTAL strong_separation{ }
+    BASE IVA CUOTA TOTAL strong_separation{ }
     | /* vacio */{
         yyerror("Error: No están indicados los titulos BASE IVA COUTA TOTAL correctamente");
     }
@@ -243,7 +241,7 @@ calculate:
 ;
 
 
-calculate: 
+element: 
     PRICE PRICE PRICE PRICE{
     }
     | after_taxes {}
