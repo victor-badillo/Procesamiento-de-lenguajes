@@ -189,10 +189,10 @@ list_products:
 
 
 some_product:
-    PRODUCT PRICE{
+    PRODUCT PRICE {
       add_product($1, atof($2)); 
     }
-    | PRODUCT NEGATIVE_PRICE{
+    | PRODUCT NEGATIVE_PRICE {
        char err[256];
        sprintf(err, "Error en línea %d: No son válidos precios negativos [%s] para los productos", yylineno, $2);
        yyerror(err); 
@@ -201,7 +201,7 @@ some_product:
 ;
 
 after_products_list:
-    SEPARATE total_price_line {}
+    SEPARATE total_price_line { }
     | /* vacio */{
     	yyerror("Error: debe haber una separacion (-) entre la lista de productos y el total");
     }
@@ -291,14 +291,14 @@ element:
 
 after_taxes:
     SEPARATE end { }
-    | /* vacio */{
+    | /* vacio */ {
        yyerror("Error: Debe haber una separación (-) entre los impuestos y la línea de despedida");
     }
 ;
 
 end:
    GOODBYE { }
-   | /* vacio */{
+   | /* vacio */ {
        yyerror("Error: Falta la linea de agradecimiento y despedida");
    }
 ;
