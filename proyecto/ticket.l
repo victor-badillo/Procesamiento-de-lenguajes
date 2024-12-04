@@ -1,7 +1,6 @@
 %{
 #include <stdio.h>
 #include <string.h>
-
 char lexeme[256];
 %}
 %option yylineno
@@ -22,12 +21,13 @@ cuota "CUOTA"[ ]+
 price [0-9]+(\.[0-9]{1,2})?[ ]*
 negativePrice -?[0-9]+(\.[0-9]{1,2})?
 goodbye "*"[ ]+"GRACIAS POR SU VISITA"[ ]+"*"
-word ({text}+([ ]{1})?)+
+product ({text}+([ ]{1})?)+
 purchaseDate {date}[ ]+{hour}
+header {supermarket}[0-9A-ZÑÇ,./ \n]+
 
 %%
 {ws}		{ }
-{supermarket}  	{ printf("SUPER\n");}
+{header}  	{ printf("HEADER\n");}
 {purchaseDate}  { printf("PURCHASEDATE\n"); }
 {tlf}		{ printf("TELEFONO\n"); }
 {separate}	{ printf("SEPARATE\n"); }
@@ -40,7 +40,7 @@ purchaseDate {date}[ ]+{hour}
 {price}		{ printf("PRICE\n");  }
 {negativePrice}	{ printf("NEGATIVE_PRICE\n");  }
 {goodbye}	{ printf("GOODBYE\n"); }
-{word}		{ printf("TEXT\n"); }
+{product}	{ printf("PRODUCT\n"); }
 .               { printf("Carácter desconocido: %s\n", yytext); }
 %%
 
