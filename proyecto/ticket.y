@@ -7,6 +7,7 @@
 
 #define MAX_PRODUCTS 100
 
+
 typedef struct {
     char product_name[256];
     int quantity;
@@ -174,7 +175,7 @@ date_hour_tlf:
 ;
 
 after_date_hour_tlf:
-    SEPARATE list_products { }
+    SEPARATE list_products after_products_list { }
     | /* vacio */{
     	yyerror("Error: debe haber una separacion (-) entre la fecha/hora/tlf y la lista de productos.");
     }
@@ -189,19 +190,18 @@ list_products:
 
 
 some_product:
-    PRODUCT PRICE {
+    PRODUCT PRICE{
       add_product($1, atof($2)); 
     }
-    | PRODUCT NEGATIVE_PRICE {
+    | PRODUCT NEGATIVE_PRICE{
        char err[256];
        sprintf(err, "Error en línea %d: No son válidos precios negativos [%s] para los productos", yylineno, $2);
        yyerror(err); 
     } 
-    after_products_list { }
 ;
 
 after_products_list:
-    SEPARATE total_price_line { }
+    SEPARATE total_price_line {}
     | /* vacio */{
     	yyerror("Error: debe haber una separacion (-) entre la lista de productos y el total");
     }
@@ -247,7 +247,7 @@ taxes:
 
 
 strong_separation:
-    SEPARATE2 SEPARATE2 SEPARATE2 SEPARATE2 calculate { }
+    SEPARATE2 SEPARATE2 SEPARATE2 SEPARATE2 calculate after_taxes{ }
     | /* vacio */{
         yyerror("Error: Debe haber una separación (=) por sección de BASE IVA COUTA TOTAL");
     }
@@ -285,9 +285,9 @@ element:
 
        
     }
-    | after_taxes {}
-;
 
+
+;
 
 after_taxes:
     SEPARATE end { }
@@ -302,6 +302,8 @@ end:
        yyerror("Error: Falta la linea de agradecimiento y despedida");
    }
 ;
+
+
 
 
 %%
@@ -337,6 +339,7 @@ int obtenerNumeroTicket(const char *nombreArchivo) {
 
 int main(int argc, char *argv[]) {
 extern FILE *yyin;
+
 
     if (argc != 2) {
         fprintf(stderr, "Uso: %s <archivo_entrada.txt>\n", argv[0]);
