@@ -445,6 +445,15 @@ extern FILE *yyin;
 
     closedir(dir);
     
+    free(supermarket_CSV);
+    free(date_CSV);
+    free(total_CSV);
+    free(date_time_copy);
+    
+    supermarket_CSV = NULL;
+    date_CSV = NULL;
+    total_CSV = NULL;
+    date_time_copy = NULL;
     
     printf("Sintaxis de ticket correcta.\n");
     return 0;
