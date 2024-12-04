@@ -163,7 +163,28 @@ date_hour_tlf:
            sprintf(err, "Error en línea %d: El nummero de telefono debe tener 9 digitos.", yylineno);
     	   yyerror(err); 
     	}
-    	date_CSV = strdup($1);
+    	 // Copiar la cadena de fecha y hora para evitar modificar la original
+        char *date_time_copy = strdup($1);
+        if (date_time_copy == NULL) {
+            yyerror("Error al copiar la fecha y hora.");
+        }
+
+        char *date = strtok(date_time_copy, " ");  // Fecha (dd/mm/yyyy)
+        char *time = strtok(NULL, " ");  // Hora (hh:mm)
+
+        if (date == NULL || time == NULL) {
+            char err[256];
+            sprintf(err, "Error en línea %d: Formato de fecha y hora incorrecto.", yylineno);
+            yyerror(err);
+        }
+
+        char formatted_date[20];
+        snprintf(formatted_date, sizeof(formatted_date), "%sT%s", date, time);
+
+        date_CSV = strdup(formatted_date);
+
+        free(date_time_copy); 
+        
     	
     }
     | /* vacio */{
@@ -218,7 +239,7 @@ total_price_line:
         
         if (total_price != accumulated_price) {
             char err[256];
-            sprintf(err, "Error en línea %d: precio total de compra [%f] no es igual a la suma de precios de los productos de la compra [%f]", yylineno, total_price, accumulated_price);
+            sprintf(err, "Error en línea %d: precio total de compra [%.2f] no es igual a la suma de precios de los productos de la compra [%.2f]", yylineno, total_price, accumulated_price);
     	    yyerror(err);
         }
         
