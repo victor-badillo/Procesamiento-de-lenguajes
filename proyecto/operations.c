@@ -116,9 +116,8 @@ BasicResult caro(const char* ticket) {
 
     // Verificar si se encontró un producto
     if (maxPrice == -1.0 || maxProduct == NULL) {
-        char err[256];
-        sprintf(err, "Error: No se encontraron productos en '%s'.\n", filepath);
-        yyerror(err);
+        fprintf(stderr, "Error: No se encontraron productos en '%s'.\n", filepath);
+        return result;
     }
 
     // Construir el resultado
@@ -184,9 +183,8 @@ BasicResult barato(const char* ticket) {
 
     // Verificar si se encontró un producto
     if (minPrice == -1.0 || minProduct == NULL) {
-        char err[256];
-        sprintf(err, "Error: No se encontraron productos en '%s'.\n", filepath);
-        yyerror(err);
+        fprintf(stderr, "Error: No se encontraron productos en '%s'.\n", filepath);
+        return result;
     }
 
     // Construir el resultado
@@ -236,9 +234,8 @@ BasicResult total(const char* ticket) {
 
     // Verificar si se encontró el precio total
     if (totalPrice == -1.0) {
-        char err[256];
-        sprintf(err, "Error: No se encontro el precio total en '%s'.\n", filepath);
-        yyerror(err);
+        fprintf(stderr, "Error: No se encontró el precio total en '%s'.\n", filepath);
+        return result;
     }
 
     // Construir el resultado
@@ -292,9 +289,8 @@ BasicResult media(const char* ticket) {
 
     // Verificar si se encontraron productos
     if (productCount == 0) {
-        char err[256];
-        sprintf(err, "Error: No se encontraron productos en '%s'.\n", filepath);
-        yyerror(err);
+        fprintf(stderr, "Error: No se encontraron productos en '%s'.\n", filepath);
+        return result;
     }
 
     // Calcular la media
@@ -320,9 +316,7 @@ BasicResult precio(const char* product, const char* ticket) {
     // Abrir el archivo CSV
     FILE* file = fopen(filepath, "r");
     if (file == NULL) {
-        char err[256];
-        sprintf(err, "Error: No se pudo abrir el archivo '%s'.\n", filepath);
-        yyerror(err);  // Llamar a yyerror si no se puede abrir el archivo
+        fprintf(stderr, "Error: No se pudo abrir el archivo '%s'.\n", filepath);
         return result;
     }
 
@@ -356,9 +350,7 @@ BasicResult precio(const char* product, const char* ticket) {
 
     // Verificar si se encontró el precio o la cantidad
     if (price == -1.0 || quantity == -1) {
-        char err[256];
-        sprintf(err, "Error: Producto '%s' no encontrado o datos incompletos en '%s'.\n", product, filepath);
-        yyerror(err);  // Llamar a yyerror si no se encontró el producto o los datos son incorrectos
+        fprintf(stderr, "Error: Producto '%s' no encontrado o datos incompletos en '%s'.\n", product, filepath);
         return result;
     }
 
@@ -383,9 +375,7 @@ BasicResult totalproducto(const char* product, const char* ticket) {
     // Abrir el archivo CSV
     FILE* file = fopen(filepath, "r");
     if (file == NULL) {
-        char err[256];
-        sprintf(err, "Error: No se pudo abrir el archivo '%s'.\n", filepath);
-        yyerror(err);  // Llamar a yyerror si no se puede abrir el archivo
+        fprintf(stderr, "Error: No se pudo abrir el archivo '%s'.\n", filepath);
         return result;
     }
 
@@ -417,9 +407,7 @@ BasicResult totalproducto(const char* product, const char* ticket) {
 
     // Verificar si se encontró el precio
     if (price == -1.0) {
-        char err[256];
-        sprintf(err, "Error: Producto '%s' no encontrado en '%s'.\n", product, filepath);
-        yyerror(err);  // Llamar a yyerror si no se encontró el producto
+        fprintf(stderr, "Error: Producto '%s' no encontrado en '%s'.\n", product, filepath);
         return result;
     }
 
@@ -441,9 +429,7 @@ void fecha(const char* ticket) {
     // Abrir el archivo CSV
     FILE* file = fopen(filepath, "r");
     if (file == NULL) {
-        char err[256];
-        sprintf(err, "Error: No se pudo abrir el archivo '%s'.\n", filepath);
-        yyerror(err);  // Llamar a yyerror si no se puede abrir el archivo
+        fprintf(stderr, "Error: No se pudo abrir el archivo '%s'.\n", filepath);
         return;
     }
 
@@ -474,9 +460,7 @@ void supermercado(const char* ticket) {
     // Abrir el archivo CSV
     FILE* file = fopen(filepath, "r");
     if (file == NULL) {
-        char err[256];
-        sprintf(err, "Error: No se pudo abrir el archivo '%s'.\n", filepath);
-        yyerror(err);  // Llamar a yyerror si no se puede abrir el archivo
+        fprintf(stderr, "Error: No se pudo abrir el archivo '%s'.\n", filepath);
         return;
     }
 
@@ -527,9 +511,7 @@ void ordenar(const char* order, const char* ticket) {
     // Abrir el archivo CSV
     FILE* file = fopen(filepath, "r");
     if (file == NULL) {
-        char err[256];
-        sprintf(err, "Error: No se pudo abrir el archivo '%s'.\n", filepath);
-        yyerror(err);  // Llamar a yyerror si no se puede abrir el archivo
+        fprintf(stderr, "Error: No se pudo abrir el archivo '%s'.\n", filepath);
         return;
     }
 

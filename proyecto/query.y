@@ -5,16 +5,11 @@
 #include <stdbool.h>
 #include "operations.h"
 
-#define MAX_LINE 1024
 
 extern int yylineno;
 void yyerror(const char *);
 extern int yylex();
 
-typedef struct {
-    char** tickets;
-    size_t count;
-} TicketList;
 
 
 void print_result(BasicResult basic){
@@ -30,32 +25,33 @@ void print_result(BasicResult basic){
 %}
 
 %union {
-    BasicResult op;
     char* str;
-    double numValue;
+    BasicResult basicResult;
     TicketList ticketList;
 }
 
 %token CARO BARATO TOTAL MEDIA PRECIO TOTAL_PRODUCTO FECHA SUPERMERCADO DESDE_HASTA VER_TICKET ORDENAR HELP
-%token AND OR LT GT EQ LBR RBR COMMA
+%token LBR RBR COMMA
 %token <str> TICKET PRODUCT FECHA_FORM ORDEN
-%token <numValue> NUM 
 
-%type <op> basic
-%type <ticketList> desdeHasta logicOperation
+%type <basicResult> basic
+%type <ticketList> desdeHasta
 
 %%
 
 query:
-    basic{ 
+    basic { 
        print_result($1);
     }
     | print_basic { }
     | desdeHasta {
-        print_desdeHasta($1)
+        print_desdeHasta($1);
     }
     HELP LBR RBR { 
     	print_help();
+    }
+    | /* vacio */{
+    	yyerror("Error: Sintaxis operaciones basicas: op(arg1,...)\nUsar help() para más ayuda");
     }
 ;
 
@@ -64,23 +60,21 @@ basic:
         $$ = caro($3);
     }
     | BARATO LBR TICKET RBR {
-        $$ = barato($2);
+        $$ = barato($3);
     }
     | TOTAL LBR TICKET RBR {
-        $$ = total($2);
+        $$ = total($3);
     }
     | MEDIA LBR TICKET RBR {
-        $$ = media($2);
+        $$ = media($3);
     }
     | PRECIO LBR PRODUCT COMMA TICKET RBR {
-        $$ = precio($2, $3);
+        $$ = precio($3, $5);
     }
     | TOTAL_PRODUCTO LBR PRODUCT COMMA TICKET RBR {
-        $$ = totalproducto($2, $3);
+        $$ = totalproducto($3, $5);
     }
-    | /* vacio */{
-    	yyerror("Error: Sintaxis operaciones basicas: op(arg1,...)\nUsar help() para más ayuda");
-    }
+    
 ;
 
 print_basic:
@@ -96,30 +90,12 @@ print_basic:
     | VER_TICKET LBR TICKET RBR {
     	ver_ticket($3);
     }
-    | /* vacio */{
-    	yyerror("Error: Sintaxis operaciones basicas de impresión: op(arg1,...)\nUsar help() para más ayuda");
-    }
-;
-
-logicOperation:
-    basic LT NUM{
-    	//Obtener listas que el resultado de basic sea menor que num
-    }
-    | basic GT NUM{
-       //Obtener listas que el resultado de basic sea mayor que num
-    }
-    | basic EQ{
-       //Obtener listas que el resultado de basic sea igual a num
-    }
 ;
 
 
 desdeHasta:
     DESDE_HASTA LBR FECHA_FORM COMMA FECHA_FORM RBR {
         $$ = desdehasta($3,$5);
-    }
-    | /* vacio */ {
-    	yyerror("Error: Sintaxis de op: desdeHasta(fecha1,fecha2) [[<,>,==] xx.xx]");
     }
 ;
 
