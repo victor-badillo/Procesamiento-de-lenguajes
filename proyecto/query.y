@@ -4,36 +4,38 @@
 #include <string.h>
 #include <stdbool.h>
 
+extern int yylineno;
+void yyerror(const char *);
+extern int yylex();
 
-bool caro(const char* ticket);
-bool barato(const char* ticket);
-bool total(const char* ticket);
-bool media(const char* ticket);
-bool fecha(const char* ticket);
-bool supermercado(const char* ticket);
-bool precio(const char* product, const char* ticket);
-bool totalproducto(const char* product, const char* ticket);
+BasicResult caro(const char* ticket);
+BasicResult barato(const char* ticket);
+BasicResult total(const char* ticket);
+BasicResult media(const char* ticket);
+BasicResult precio(const char* product, const char* ticket);
+BasicResult totalproducto(const char* product, const char* ticket);
+void fecha(const char* ticket);
+void supermercado(const char* ticket);
 void ordenar(const char* tipo, const char* ticket);
+void ver_ticket(const char* ticket);
 bool desdehasta(const char* fecha1, const char* fecha2);
+void print_help();
 
 
 typedef struct {
-    bool resultado;
+    double result;
     char* output;
 } BasicResult;
 
+typedef struct {
+    char** tickets;
+    size_t count;
+} TicketList;
+
+
 // Funciones auxiliares para operaciones (declaraciones)
-void ejecutarOperaciones(BasicResult op);
+void printResult(BasicResult op);
 
-
-
-void ejecutarOperaciones(BasicResult op) {
-    if (op.resultado) {
-        printf("Resultado: %s\n", op.output);
-    } else {
-        printf("No cumple la condición.\n");
-    }
-}
 
 void print_help() {
     printf("\nComandos disponibles y su uso:\n");
@@ -93,13 +95,11 @@ void print_help() {
     printf("---------------------------------------------\n");
 }
 
-
 %}
 
 %union {
-    OperacionResult opResult;
+    BasicResult op;
     char* str;
-    bool bval;
     double numValue;
 }
 
@@ -108,101 +108,100 @@ void print_help() {
 %token <str> TICKET PRODUCT FECHA_FORM ORDEN
 %token <numValue> NUM 
 
-%type <opResult> operacion and_or_operacion desdeHasta
-%type <str> tipo_orden
+%type <op> basic
 
 %%
 
 query:
-    basic{
-    
-        ejecutarOperaciones($1);
-    }
-    | desdeHasta and_or_operacion
-    {
-        // Llamar a desdeHasta y luego combinar con la operación lógica
-        ejecutarOperaciones($1);
-    }
-    HELP LBR RBR{ 
+    basic{ }
+    | print_basic { }
+    | desdeHasta { }
+    HELP LBR RBR { 
     	print_help();
     }
 ;
 
 basic:
     CARO LBR TICKET RBR {
-        $$.resultado = caro($2);
-        $$.output = "Producto más caro: " + $2;
+        $$ = caro($3);
+        printf("%s", $$.output);
     }
-    | BARATO TICKET
-    {
-        $$.resultado = barato($2);
-        $$.output = "Producto más barato: " + $2;
+    | BARATO LBR TICKET RBR {
+        $$ = barato($2);
     }
-    | TOTAL TICKET
-    {
-        $$.resultado = total($2);
-        $$.output = "Precio total: " + $2;
+    | TOTAL LBR TICKET RBR {
+        $$ = total($2);
     }
-    | MEDIA TICKET
-    {
-        $$.resultado = media($2);
-        $$.output = "Media de precio: " + $2;
+    | MEDIA LBR TICKET RBR {
+        $$ = media($2);
     }
-    | FECHA TICKET
-    {
-        $$.resultado = fecha($2);
-        $$.output = "Fecha: " + $2;
+    | PRECIO LBR PRODUCT COMMA TICKET RBR {
+        $$ = precio($2, $3);
     }
-    | SUPERMERCADO TICKET
-    {
-        $$.resultado = supermercado($2);
-        $$.output = "Supermercado: " + $2;
+    | TOTAL_PRODUCTO LBR PRODUCT COMMA TICKET RBR {
+        $$ = totalproducto($2, $3);
     }
-    | PRECIO PRODUCT TICKET
-    {
-        $$.resultado = precio($2, $3);
-        $$.output = "Precio de producto: " + $2 + " en " + $3;
-    }
-    | TOTALPRODUCTO PRODUCT TICKET
-    {
-        $$.resultado = totalproducto($2, $3);
-        $$.output = "Total de producto: " + $2 + " en " + $3;
-    }
+    
     | /* vacio */{
-    	yyerror("Error: Sintaxis operaciones basicas: op(arg1,...)");
+    	yyerror("Error: Sintaxis operaciones basicas: op(arg1,...)\nUsar help() para más ayuda");
+    }
+;
+
+print_basic:
+     FECHA LBR TICKET RBR {
+        fecha($3);
+    }
+    | SUPERMERCADO LBR TICKET RBR {
+        supermercado($3);
+    }
+    | ORDENAR LBR ORDEN COMMA TICKET RBR {
+        ordenar($3,$5);
+    }
+    | VER_TICKET LBR TICKET RBR {
+    	ver_ticket($3);
     }
 ;
 
 and_or_operacion:
-    operacion AND operacion
-    {
+    AND basic logic NUM{
         // Realizar operación AND entre dos operaciones
-        $$.resultado = ($1.resultado && $2.resultado);
+        $$.result = ($1.result && $2.result);
         $$.output = "AND combinado: " + $1.output + " y " + $2.output;
     }
-    | operacion OR operacion
-    {
+    | OR basic logic NUM{
         // Realizar operación OR entre dos operaciones
         $$.resultado = ($1.resultado || $2.resultado);
         $$.output = "OR combinado: " + $1.output + " o " + $2.output;
     }
-    ;
+    | /* vacio */ {
+    	yyerror("Error: Sintaxis de lógica incorrecta\n desdeHasta(fecha1,fecha2) [<,>,==] xx.xx");
+    }
+;
+
+logic:
+    LT {}
+    | GT {}
+    | == {}
+;
 
 desdeHasta:
-    DESDE_HASTA FECHA_FORM FECHA_FORM
-    {
-        // Obtener tickets dentro del rango de fechas
+    DESDE_HASTA LBR FECHA_FORM COMMA FECHA_FORM RBR {
         $$.resultado = desdehasta($2, $3);
         $$.output = "Tickets entre fechas: " + $2 + " y " + $3;
     }
-    ;
+    |  DESDE_HASTA LBR FECHA_FORM COMMA FECHA_FORM RBR and_or_operacion {
+    
+    }
+    | /* vacio */ {
+    	yyerror("Error: Sintaxis de op: desdeHasta(fecha1,fecha2) [[<,>,==] xx.xx]");
+    }
+;
 
 %%
 
 
 void yyerror(const char *error) {
-    fprintf(stderr, "Sintaxis XML incorrecta. %s\n", error);
-    stack_clear();
+    fprintf(stderr, "Sintaxis de query incorrecta. %s\n", error);
     exit(0);
 }
 
@@ -227,7 +226,7 @@ extern FILE *yyin;
 		printf("ERROR: Demasiados argumentos.\nSintaxis: %s [fichero_entrada]\n\n", argv[0]);
     }
     
-    printf("Sintaxis de Query correcta.\n");
+    printf("\nSintaxis de Query correcta.\n");
 	
     return 0;
 }
