@@ -39,7 +39,7 @@ void printResult(BasicResult op);
 
 void print_help() {
     printf("\nComandos disponibles y su uso:\n");
-    printf("---------------------------------------------\n");
+    printf("-------------------------------------------------------------------------------------\n");
     
     printf("Operaciones básicas (no combinables):\n");
     printf("  caro(ticketX) -> int\n");
@@ -61,13 +61,12 @@ void print_help() {
     printf("  totalProducto(producto, ticketX) -> int\n");
     printf("      - Devuelve el precio total de un producto en un ticket (cantidad * precio).\n");
     
+    printf("\nOperaciones específicas (no combinables):\n");
     printf("  fecha(ticketX) -> string\n");
-    printf("      - Devuelve la fecha de compra de un ticket.\n");
+    printf("      - Imprime la fecha de compra de un ticket.\n");
     
     printf("  supermercado(ticketX) -> string\n");
-    printf("      - Devuelve el supermercado en el que se realizó la compra.\n");
-    
-    printf("\nOperaciones específicas (no combinables):\n");
+    printf("      - Imprime el supermercado en el que se realizó la compra.\n");
     printf("  ordenar(mayor/menor, ticketX)\n");
     printf("      - Imprime por pantalla los productos ordenados por precio de mayor a menor o viceversa.\n");
     
@@ -92,7 +91,8 @@ void print_help() {
     printf("\nNotas:\n");
     printf("  - Las operaciones con AND y OR devuelven los archivos .txt de los tickets que cumplen las condiciones.\n");
     printf("  - Para todas las operaciones se esperan nombres de tickets en el formato \"ticketX\", donde X es un número.\n");
-    printf("---------------------------------------------\n");
+    printf("  - Los nombres de productos van entre comillas dobles y en mayusculas.\n");
+    printf("-------------------------------------------------------------------------------------\n");
 }
 
 %}
@@ -101,6 +101,7 @@ void print_help() {
     BasicResult op;
     char* str;
     double numValue;
+    TicketList ticketList;
 }
 
 %token CARO BARATO TOTAL MEDIA PRECIO TOTAL_PRODUCTO FECHA SUPERMERCADO DESDE_HASTA VER_TICKET ORDENAR HELP
@@ -109,13 +110,26 @@ void print_help() {
 %token <numValue> NUM 
 
 %type <op> basic
+%type <ticketList> desdeHasta logicOperation
 
 %%
 
 query:
-    basic{ }
+    basic{ 
+       printf("%s", $$.output);
+    }
     | print_basic { }
-    | desdeHasta { }
+    | desdeHasta {
+        //Imprimir tickets de la lista
+    }
+    | desdeHasta AND logicOperation{
+    	//interseccion de $1 y $3
+    	//Imprimir tickets de la lista
+    }
+    | desdeHasta OR logicOperation{
+        //union de $1 y $3
+        //Imprimir tickets de la lista
+    }
     HELP LBR RBR { 
     	print_help();
     }
@@ -124,7 +138,6 @@ query:
 basic:
     CARO LBR TICKET RBR {
         $$ = caro($3);
-        printf("%s", $$.output);
     }
     | BARATO LBR TICKET RBR {
         $$ = barato($2);
@@ -141,7 +154,6 @@ basic:
     | TOTAL_PRODUCTO LBR PRODUCT COMMA TICKET RBR {
         $$ = totalproducto($2, $3);
     }
-    
     | /* vacio */{
     	yyerror("Error: Sintaxis operaciones basicas: op(arg1,...)\nUsar help() para más ayuda");
     }
@@ -160,37 +172,27 @@ print_basic:
     | VER_TICKET LBR TICKET RBR {
     	ver_ticket($3);
     }
-;
-
-and_or_operacion:
-    AND basic logic NUM{
-        // Realizar operación AND entre dos operaciones
-        $$.result = ($1.result && $2.result);
-        $$.output = "AND combinado: " + $1.output + " y " + $2.output;
-    }
-    | OR basic logic NUM{
-        // Realizar operación OR entre dos operaciones
-        $$.resultado = ($1.resultado || $2.resultado);
-        $$.output = "OR combinado: " + $1.output + " o " + $2.output;
-    }
-    | /* vacio */ {
-    	yyerror("Error: Sintaxis de lógica incorrecta\n desdeHasta(fecha1,fecha2) [<,>,==] xx.xx");
+    | /* vacio */{
+    	yyerror("Error: Sintaxis operaciones basicas de impresión: op(arg1,...)\nUsar help() para más ayuda");
     }
 ;
 
-logic:
-    LT {}
-    | GT {}
-    | == {}
+logicOperation:
+    basic LT NUM{
+    	//Obtener listas que el resultado de basic sea menor que num
+    }
+    | basic GT NUM{
+       //Obtener listas que el resultado de basic sea mayor que num
+    }
+    | basic EQ{
+       //Obtener listas que el resultado de basic sea igual a num
+    }
 ;
+
 
 desdeHasta:
     DESDE_HASTA LBR FECHA_FORM COMMA FECHA_FORM RBR {
-        $$.resultado = desdehasta($2, $3);
-        $$.output = "Tickets entre fechas: " + $2 + " y " + $3;
-    }
-    |  DESDE_HASTA LBR FECHA_FORM COMMA FECHA_FORM RBR and_or_operacion {
-    
+        //obtener lista entre fechas
     }
     | /* vacio */ {
     	yyerror("Error: Sintaxis de op: desdeHasta(fecha1,fecha2) [[<,>,==] xx.xx]");
