@@ -15,7 +15,7 @@ text [0-9A-ZÑÇ,./-]+
 product_text \"({text}+([ ]{1})?)+\"
 ticket "ticket"[0-9]+
 fechaform [0-9]{2}"/"[0-9]{2}"/"[0-9]{4}"T"[0-9]{2}":"[0-9]{2}
-orden ((?i:mayor)|(?i:menor))
+orden ("mayor"|"menor")
 
 caro (?i:caro)
 barato (?i:barato)
@@ -30,13 +30,7 @@ precio (?i:precio)
 verticket (?i:verticket)
 help(?i:help)
 
-and (?i:and)
-or (?i:or)
 
-lt "<"
-gt ">"
-eq "=="
-num [0-9]+(\.[0-9]{1,2})?
 
 
 %%
@@ -44,10 +38,6 @@ num [0-9]+(\.[0-9]{1,2})?
 {lbr}		{ printf("("); return LBR; }
 {rbr}  		{ printf(")\n"); return RBR; }
 {comma}		{ printf(","); return COMMA; }
-{lt}		{ printf("<"); return LT; }
-{gt}		{ printf(">"); return GT; }
-{eq}		{ printf("=="); return EQ; }
-{num}		{ yylval.numValue = atof(yytext); printf("NUM"); return NUM; }
 {caro}		{ printf("CARO"); return CARO; }
 {barato}  	{ printf("BARATO"); return BARATO; }
 {orden}		{ strcpy(lexeme, yytext); yylval.str = strdup(lexeme); printf("mayor/menor"); return ORDEN; }
@@ -61,8 +51,6 @@ num [0-9]+(\.[0-9]{1,2})?
 {verticket}	{ printf("VERTICKET"); return VER_TICKET; }
 {help}		{ printf("HELP");  return HELP;}
 {precio}	{ printf("PRECIO");  return PRECIO; }
-{and}		{ printf("AND\n"); return AND; }
-{or}		{ printf("OR\n"); return OR;  }
 {fechaform}	{ strcpy(lexeme, yytext); yylval.str = strdup(lexeme); printf("fechaXXX"); return FECHA_FORM; }
 {ticket}	{ strcpy(lexeme, yytext); yylval.str = strdup(lexeme); printf("ticketXXX"); return TICKET; }
 {product_text}	{ strcpy(lexeme, yytext); yylval.str = strdup(lexeme); printf("productoXXX"); return PRODUCT; }

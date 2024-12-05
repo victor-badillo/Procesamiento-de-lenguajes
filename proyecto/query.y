@@ -3,29 +3,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include "operations.h"
+
+#define MAX_LINE 1024
 
 extern int yylineno;
 void yyerror(const char *);
 extern int yylex();
-
-BasicResult caro(const char* ticket);
-BasicResult barato(const char* ticket);
-BasicResult total(const char* ticket);
-BasicResult media(const char* ticket);
-BasicResult precio(const char* product, const char* ticket);
-BasicResult totalproducto(const char* product, const char* ticket);
-void fecha(const char* ticket);
-void supermercado(const char* ticket);
-void ordenar(const char* tipo, const char* ticket);
-void ver_ticket(const char* ticket);
-bool desdehasta(const char* fecha1, const char* fecha2);
-void print_help();
-
-
-typedef struct {
-    double result;
-    char* output;
-} BasicResult;
 
 typedef struct {
     char** tickets;
@@ -33,66 +17,14 @@ typedef struct {
 } TicketList;
 
 
-// Funciones auxiliares para operaciones (declaraciones)
-void printResult(BasicResult op);
+void print_result(BasicResult basic){
 
+   if(basic.result == -1.0 ){
+      printf("Resultados no encontrados para esta operación");
+   }else{
+      printf("%s", basic.output);
+   }
 
-void print_help() {
-    printf("\nComandos disponibles y su uso:\n");
-    printf("-------------------------------------------------------------------------------------\n");
-    
-    printf("Operaciones básicas (no combinables):\n");
-    printf("  caro(ticketX) -> int\n");
-    printf("      - Devuelve el producto más caro del ticket.\n");
-    printf("      - Salida: product: xx.xx\n");
-    
-    printf("  barato(ticketX) -> int\n");
-    printf("      - Devuelve el producto más barato del ticket.\n");
-    
-    printf("  total(ticketX) -> int\n");
-    printf("      - Devuelve el precio total de un ticket.\n");
-    
-    printf("  media(ticketX) -> int\n");
-    printf("      - Devuelve la media de precio de los productos en un ticket.\n");
-    
-    printf("  precio(producto, ticketX) -> int\n");
-    printf("      - Devuelve el precio de un producto específico en un ticket.\n");
-    
-    printf("  totalProducto(producto, ticketX) -> int\n");
-    printf("      - Devuelve el precio total de un producto en un ticket (cantidad * precio).\n");
-    
-    printf("\nOperaciones específicas (no combinables):\n");
-    printf("  fecha(ticketX) -> string\n");
-    printf("      - Imprime la fecha de compra de un ticket.\n");
-    
-    printf("  supermercado(ticketX) -> string\n");
-    printf("      - Imprime el supermercado en el que se realizó la compra.\n");
-    printf("  ordenar(mayor/menor, ticketX)\n");
-    printf("      - Imprime por pantalla los productos ordenados por precio de mayor a menor o viceversa.\n");
-    
-    printf("  verTicket(ticketX)\n");
-    printf("      - Imprime por pantalla el contenido del ticket en formato de archivo .txt.\n");
-    
-    printf("\nOperación combinable:\n");
-    printf("  desdeHasta(fecha1, fecha2)\n");
-    printf("      - Devuelve los tickets (archivos .txt) que están en el rango de fechas especificado.\n");
-    printf("      - Verifica las fechas en los archivos .csv.\n");
-    printf("      - Puede combinarse con operaciones básicas usando AND y OR.\n");
-    
-    printf("\nCombinaciones válidas de desdeHasta con operaciones básicas:\n");
-    printf("  desdeHasta(\"fecha1\", \"fecha2\") AND operacion_basica\n");
-    printf("      - Devuelve los tickets que cumplen ambas condiciones.\n");
-    printf("      - Ejemplo: desdeHasta(\"01/12/2024\", \"05/12/2024\") AND total(ticket) > 50\n");
-    
-    printf("  desdeHasta(\"fecha1\", \"fecha2\") OR operacion_basica\n");
-    printf("      - Devuelve los tickets que cumplen al menos una de las condiciones.\n");
-    printf("      - Ejemplo: desdeHasta(\"01/12/2024\", \"05/12/2024\") OR total(ticket) < 20\n");
-    
-    printf("\nNotas:\n");
-    printf("  - Las operaciones con AND y OR devuelven los archivos .txt de los tickets que cumplen las condiciones.\n");
-    printf("  - Para todas las operaciones se esperan nombres de tickets en el formato \"ticketX\", donde X es un número.\n");
-    printf("  - Los nombres de productos van entre comillas dobles y en mayusculas.\n");
-    printf("-------------------------------------------------------------------------------------\n");
 }
 
 %}
@@ -116,19 +48,11 @@ void print_help() {
 
 query:
     basic{ 
-       printf("%s", $$.output);
+       print_result($1);
     }
     | print_basic { }
     | desdeHasta {
-        //Imprimir tickets de la lista
-    }
-    | desdeHasta AND logicOperation{
-    	//interseccion de $1 y $3
-    	//Imprimir tickets de la lista
-    }
-    | desdeHasta OR logicOperation{
-        //union de $1 y $3
-        //Imprimir tickets de la lista
+        print_desdeHasta($1)
     }
     HELP LBR RBR { 
     	print_help();
@@ -192,7 +116,7 @@ logicOperation:
 
 desdeHasta:
     DESDE_HASTA LBR FECHA_FORM COMMA FECHA_FORM RBR {
-        //obtener lista entre fechas
+        $$ = desdehasta($3,$5);
     }
     | /* vacio */ {
     	yyerror("Error: Sintaxis de op: desdeHasta(fecha1,fecha2) [[<,>,==] xx.xx]");

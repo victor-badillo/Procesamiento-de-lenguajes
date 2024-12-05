@@ -1,7 +1,8 @@
 FUENTE = ticket
 FUENTE2 = query
+FUENTE3 = operations
 PRUEBA = ticketsRaw
-PRUEBA2 = query1.txt
+PRUEBA2 = querys/query1.txt
 LIB = lfl -lm
 LIB2 = lfl
 
@@ -14,7 +15,8 @@ compile:
 
 query:
 	flex $(FUENTE2).l
-	gcc -o $(FUENTE2) lex.yy.c -$(LIB2)
+	bison -o $(FUENTE2).tab.c $(FUENTE2).y -yd
+	gcc -o $(FUENTE2) lex.yy.c $(FUENTE2).tab.c $(FUENTE3).c -$(LIB2) -ly
 
 run:
 	./$(FUENTE) < $(PRUEBA)
