@@ -2,7 +2,7 @@ FUENTE = ticket
 FUENTE2 = query
 FUENTE3 = operations
 PRUEBA = ticketsRaw
-PRUEBA2 = querys/query1.txt
+PRUEBA2 = querys/query3.txt
 LIB = lfl -lm
 LIB2 = lfl
 
@@ -34,4 +34,4 @@ clean:
 	rm $(FUENTE) lex.yy.c $(FUENTE).tab.c $(FUENTE).tab.h
 
 clean2:
-	rm $(FUENTE2) lex.yy.c $(FUENTE2).tab.c $(FUENTE2).tab.h
+	rm -f $(FUENTE2) lex.yy.c $(FUENTE2).tab.c $(FUENTE2).tab.h $(FUENTE3).o

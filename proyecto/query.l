@@ -1,6 +1,7 @@
 %{
 #include <stdio.h>
 #include <string.h>
+#include "operations.h"
 #include "query.tab.h"
 char lexeme[256];
 %}
