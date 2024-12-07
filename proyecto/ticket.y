@@ -8,6 +8,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <dirent.h>
+#include <time.h>
+
 
 #define MAX_PRODUCTS 100
 
@@ -45,55 +47,77 @@ int getDaysInMonth(int month, int year) {
     return daysInMonth[month - 1];
 }
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
 void check_date(const char *dateTime) {
     int day, month, year;
     int hour, minute;
-    char date[11], time[6];
+    char date[11], time_str[6]; // Renombré la variable 'time' a 'time_str'
     char err[256];
     
-    if (sscanf(dateTime, "%10s %5s", date, time) != 2) {
-    	sprintf(err, "Error en línea %d: Formato de fecha y hora incorrecto.", yylineno);
-    	yyerror(err);
+    if (sscanf(dateTime, "%10s %5s", date, time_str) != 2) {  // Cambié 'time' a 'time_str'
+        sprintf(err, "Error en línea %d: Formato de fecha y hora incorrecto.", yylineno);
+        yyerror(err);
     }
 
+    // Verificación del formato de la fecha
     if (sscanf(date, "%2d/%2d/%4d", &day, &month, &year) != 3) {
         sprintf(err, "Error en línea %d: Formato de fecha incorrecto.", yylineno);
-    	yyerror(err);
+        yyerror(err);
     }
 
-
+    // Validación del mes
     if (month < 1 || month > 12) {
-    	sprintf(err, "Error en línea %d: El mes debe estar entre 01 y 12.", yylineno);
-    	yyerror(err);
+        sprintf(err, "Error en línea %d: El mes debe estar entre 01 y 12.", yylineno);
+        yyerror(err);
     }
 
     int daysInMonth = getDaysInMonth(month, year);
     if (day < 1 || day > daysInMonth) {
-    	sprintf(err, "Error en línea %d: El día %d no es válido para el mes %d del año %d.", yylineno,day, month, year);
-    	yyerror(err);
+        sprintf(err, "Error en línea %d: El día %d no es válido para el mes %d del año %d.", yylineno, day, month, year);
+        yyerror(err);
     }
 
+    // Validación del año (2000-2025)
     if (year < 2000 || year > 2025) {
         sprintf(err, "Error en línea %d: El año debe estar entre 2000 y 2025.", yylineno);
         yyerror(err);
     }
 
-    if (sscanf(time, "%2d:%2d", &hour, &minute) != 2) {
+    // Verificación del formato de la hora
+    if (sscanf(time_str, "%2d:%2d", &hour, &minute) != 2) {  // Cambié 'time' a 'time_str'
         sprintf(err, "Error en línea %d: Formato de hora incorrecto.", yylineno);
-    	yyerror(err);
+        yyerror(err);
     }
 
+    // Validación de la hora y minutos
     if (hour < 0 || hour > 23) {
         sprintf(err, "Error en línea %d: La hora debe estar entre 00 y 23.", yylineno);
-    	yyerror(err);
+        yyerror(err);
     }
 
     if (minute < 0 || minute > 59) {
         sprintf(err, "Error en línea %d: Los minutos deben estar entre 00 y 59.", yylineno);
-    	yyerror(err);
+        yyerror(err);
     }
 
+    // Obtener la fecha y hora actuales
+    time_t t = time(NULL);            // Obtiene el tiempo actual
+    struct tm tm = *localtime(&t);    // Convierte el tiempo en estructura tm
+
+    // Comprobar si la fecha proporcionada es mayor que la fecha actual
+    if (year > tm.tm_year + 1900 || // Año mayor
+        (year == tm.tm_year + 1900 && month > tm.tm_mon + 1) || // Mes mayor
+        (year == tm.tm_year + 1900 && month == tm.tm_mon + 1 && day > tm.tm_mday) || // Día mayor
+        (year == tm.tm_year + 1900 && month == tm.tm_mon + 1 && day == tm.tm_mday && hour > tm.tm_hour) || // Hora mayor
+        (year == tm.tm_year + 1900 && month == tm.tm_mon + 1 && day == tm.tm_mday && hour == tm.tm_hour && minute > tm.tm_min)) { // Minuto mayor
+        sprintf(err, "Error en línea %d: La fecha y hora proporcionadas no pueden ser posteriores a la fecha y hora actual.", yylineno);
+        yyerror(err);
+    }
 }
+
 
 void add_product(const char *product_name, double price) {
 
@@ -310,7 +334,7 @@ element:
        double total = atof($4);
        
        double expected_cuota = base * iva;
-       double rounded_cuota = ceil(expected_cuota * 100) / 100.0;
+       double rounded_cuota = round2(cuota);
        
        if (rounded_cuota != cuota) {
             char err[256];
@@ -319,7 +343,8 @@ element:
         }
         
         double expected_total = base + rounded_cuota;
-        if (expected_total != total) {
+        
+        if (round2(expected_total) != total) {
             char err[256];
             sprintf(err, "Error en línea %d: La suma de base + IVA (%.2f) no coincide con el total proporcionado %.2f", yylineno, expected_total, total);
             yyerror(err);
@@ -436,6 +461,9 @@ extern FILE *yyin;
             }
 
             yyparse();
+            
+            printf("Sintaxis de ticket correcta: %s\n", entry->d_name);
+            
             fclose(yyin);
             fclose(output);
             product_count = 0;  // Resetear el contador de productos

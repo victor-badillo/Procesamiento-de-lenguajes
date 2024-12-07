@@ -7,13 +7,13 @@ char lexeme[256];
 %option yylineno
 
 ws [ \t\n]+
-supermarket "**"([ ]+)[A-ZÑÇ ]+([ ]+)"**"
+supermarket "**"([ ]+)[A-ZÁÉÍÓÚÑÇ ]+([ ]+)"**"
 separate [-]{32}
 separate2 [=]+
 date [0-9]{2}"/"[0-9]{2}"/"[0-9]{4} 
 hour [ ]+[0-9]{2}":"[0-9]{2}[ ]+
 tlf "Tlf:"[0-9]{9}
-text [0-9A-ZÑÇ,./-]+
+text [0-9A-ZÁÉÍÓÚÑÇ,./-]+
 totalPurchase "TOTAL"[.]+":"
 total "TOTAL"[ \n]+
 base "BASE"[ ]+
@@ -24,7 +24,7 @@ negativePrice -?[0-9]+(\.[0-9]{1,2})?
 goodbye "*"[ ]+"GRACIAS POR SU VISITA"[ ]+"*"
 product ({text}+([ ]{1})?)+
 purchaseDate {date}[ ]+{hour}
-header {supermarket}[0-9A-ZÑÇ,./ \n]+
+header {supermarket}[0-9A-ZÁÉÍÓÚÑÇ,./ \n]+
 
 %%
 {ws}		{ }
