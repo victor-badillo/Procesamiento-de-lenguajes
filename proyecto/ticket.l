@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <string.h>
 #include "ticket.tab.h"
-char lexeme[256];
 %}
 %option yylineno
 
@@ -28,20 +27,20 @@ header {supermarket}[0-9A-ZÁÉÍÓÚÑÇ,./ \n]+
 
 %%
 {ws}		{ }
-{header}  	{ strcpy(lexeme, yytext); yylval.str = strdup(lexeme); printf("HEADER\n"); return HEADER; }
-{purchaseDate}  { strcpy(lexeme, yytext); yylval.str = strdup(lexeme); printf("PURCHASEDATE\n"); return PURCHASEDATE; }
-{tlf}		{ strcpy(lexeme, yytext); yylval.str = strdup(lexeme); printf("TELEFONO\n"); return PHONE_NUMBER; }
+{header}  	{ yylval.str = strdup(yytext); printf("HEADER\n"); return HEADER; }
+{purchaseDate}  { yylval.str = strdup(yytext); printf("PURCHASEDATE\n"); return PURCHASEDATE; }
+{tlf}		{ yylval.str = strdup(yytext); printf("TELEFONO\n"); return PHONE_NUMBER; }
 {separate}	{ printf("SEPARATE\n"); return SEPARATE; }
 {separate2}	{ printf("SEPARATE2222\n"); return SEPARATE2; }
-{totalPurchase}	{ strcpy(lexeme, yytext); yylval.str = strdup(lexeme); printf("TOTALPURCHASE\n"); return TOTALPURCHASE; }
+{totalPurchase}	{ yylval.str = strdup(yytext); printf("TOTALPURCHASE\n"); return TOTALPURCHASE; }
 {base}		{ printf("BASE\n"); return BASE; }
 {iva}		{ printf("IVA\n"); return IVA; }
 {cuota}		{ printf("CUOTA\n"); return CUOTA; }
 {total}		{ printf("TOTAL\n");  return TOTAL; }
-{price}		{ strcpy(lexeme, yytext); yylval.str = strdup(lexeme); printf("PRICE\n"); return PRICE;}
-{negativePrice}	{ strcpy(lexeme, yytext); yylval.str = strdup(lexeme);  printf("NEGATIVE_PRICE\n"); return NEGATIVE_PRICE; }
+{price}		{ yylval.str = strdup(yytext); printf("PRICE\n"); return PRICE;}
+{negativePrice}	{ yylval.str = strdup(yytext);  printf("NEGATIVE_PRICE\n"); return NEGATIVE_PRICE; }
 {goodbye}	{ printf("GOODBYE\n"); return GOODBYE; }
-{product}	{ strcpy(lexeme, yytext); yylval.str = strdup(lexeme); printf("PRODUCT\n"); return PRODUCT; }
+{product}	{ yylval.str = strdup(yytext); printf("PRODUCT\n"); return PRODUCT; }
 .               { printf("Carácter desconocido: %s, en la línea %d\n", yytext, yylineno); return NO_VALID; }
 %%
 
