@@ -133,31 +133,6 @@ double round2(double value){
     return round(value * 100.0) / 100.0;
 }
 
-void trim_right(char *str) {
-    int length = strlen(str);
-    
-    while (length > 0 && isspace(str[length - 1])) {
-        str[length - 1] = '\0';
-        length--;
-    }
-}
-
-
-void writeCSV(){
-
-   fprintf(output, "Supermercado,Fecha,Total\n");
-   fprintf(output, "\"%s\",%s,%s\n", supermarket_CSV, date_CSV, total_CSV);
-   fprintf(output, "Producto,Cantidad,Precio\n");
-   for (int i = 0; i < product_count; i++) {
-        trim_right(product_list[i].product_name);
-        fprintf(output, "\"%s\",%d,%.2f\n",
-                product_list[i].product_name,
-                product_list[i].quantity,
-                product_list[i].total_price);
-   }
-   
-   
-}
 
 
 %}
@@ -172,7 +147,6 @@ void writeCSV(){
 ticket:
     HEADER after_header {
         supermarket_CSV = strdup($1);
-        writeCSV();
     }
     | /* vacio */{
         yyerror("Error: lo primero definido en un ticket debe ser la cabecera con el supermercado, calle y empresa.");
@@ -397,7 +371,29 @@ char *extractFileName(const char *path) {
     return copy;
 }
 
+void trim_right(char *str) {
+    int length = strlen(str);
+    
+    while (length > 0 && isspace(str[length - 1])) {
+        str[length - 1] = '\0';
+        length--;
+    }
+}
 
+
+void writeCSV(){
+
+   fprintf(output, "Supermercado,Fecha,Total\n");
+   fprintf(output, "\"%s\",%s,%s\n", supermarket_CSV, date_CSV, total_CSV);
+   fprintf(output, "Producto,Cantidad,Precio\n");
+   for (int i = 0; i < product_count; i++) {
+        trim_right(product_list[i].product_name);
+        fprintf(output, "\"%s\",%d,%.2f\n",
+                product_list[i].product_name,
+                product_list[i].quantity,
+                product_list[i].total_price);
+   }
+}
 
 int main(int argc, char *argv[]) {
 extern FILE *yyin;
@@ -437,16 +433,7 @@ extern FILE *yyin;
 		    if (ticketNum == -1) {
 		        fprintf(stderr, "Error: El archivo %s no tiene el formato esperado ticketX.txt\n", entry->d_name);
 		        continue;
-		    }
-
-		    char outName[256];
-		    snprintf(outName, sizeof(outName), "%s/ticket%d.csv", outDirectory, ticketNum);
-
-		    output = fopen(outName, "w");
-		    if (!output) {
-		        perror("No se pudo abrir el archivo de salida");
-		        continue;
-		    }
+		    }	    
 
 		    char inputFile[256];
 		    snprintf(inputFile, sizeof(inputFile), "%s/%s", path, entry->d_name);
@@ -459,6 +446,17 @@ extern FILE *yyin;
 		    }
 
 		    yyparse();
+		    
+		    char outName[256];
+		    snprintf(outName, sizeof(outName), "%s/ticket%d.csv", outDirectory, ticketNum);
+
+		    output = fopen(outName, "w");
+		    if (!output) {
+		        perror("No se pudo abrir el archivo de salida");
+		        continue;
+		    }
+		    
+		    writeCSV();
 		    
 		    printf("Sintaxis de ticket correcta: %s\n", entry->d_name);
 		    fclose(yyin);
@@ -481,6 +479,14 @@ extern FILE *yyin;
             return 1;
         }
 
+        yyin = fopen(path, "r");
+        if (!yyin) {
+            perror("No se pudo abrir el archivo de entrada");
+            fclose(output);
+            return 1;
+        }
+        yyparse();
+        
         char outName[256];
         snprintf(outName, sizeof(outName), "%s/ticket%d.csv",outDirectory, ticketNum);
 
@@ -491,15 +497,8 @@ extern FILE *yyin;
             perror("No se pudo abrir el archivo de salida");
             return 1;
         }
-
-        yyin = fopen(path, "r");
-        if (!yyin) {
-            perror("No se pudo abrir el archivo de entrada");
-            fclose(output);
-            return 1;
-        }
-
-        yyparse();
+        
+        writeCSV();
 
         printf("Sintaxis de ticket correcta: %s\n", path);
 
