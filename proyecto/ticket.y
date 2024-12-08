@@ -26,7 +26,6 @@ char *date_CSV;
 char *total_CSV;
 char *date_time_copy;
 
-extern int yylineno;
 void yyerror(const char *s);
 extern int yylex();
 FILE *output;
@@ -53,43 +52,43 @@ void check_date(const char *dateTime) {
     char err[256];
     
     if (sscanf(dateTime, "%10s %5s", date, time_str) != 2) {
-        sprintf(err, "Error en línea %d: Formato de fecha y hora incorrecto.", yylineno);
+        sprintf(err, "Error: Formato de fecha y hora incorrecto.");
         yyerror(err);
     }
 
     if (sscanf(date, "%2d/%2d/%4d", &day, &month, &year) != 3) {
-        sprintf(err, "Error en línea %d: Formato de fecha incorrecto.", yylineno);
+        sprintf(err, "Error: Formato de fecha incorrecto.");
         yyerror(err);
     }
 
     if (month < 1 || month > 12) {
-        sprintf(err, "Error en línea %d: El mes debe estar entre 01 y 12.", yylineno);
+        sprintf(err, "Error: El mes debe estar entre 01 y 12.");
         yyerror(err);
     }
 
     int daysInMonth = getDaysInMonth(month, year);
     if (day < 1 || day > daysInMonth) {
-        sprintf(err, "Error en línea %d: El día %d no es válido para el mes %d del año %d.", yylineno, day, month, year);
+        sprintf(err, "Error: El día %d no es válido para el mes %d del año %d.", day, month, year);
         yyerror(err);
     }
 
     if (year < 2000) {
-        sprintf(err, "Error en línea %d: El año debe estar entre 2000 y 2025.", yylineno);
+        sprintf(err, "Error: El año no puede ser menor a 2000.");
         yyerror(err);
     }
 
     if (sscanf(time_str, "%2d:%2d", &hour, &minute) != 2) {
-        sprintf(err, "Error en línea %d: Formato de hora incorrecto.", yylineno);
+        sprintf(err, "Error: Formato de hora incorrecto.");
         yyerror(err);
     }
 
     if (hour < 0 || hour > 23) {
-        sprintf(err, "Error en línea %d: La hora debe estar entre 00 y 23.", yylineno);
+        sprintf(err, "Error: La hora debe estar entre 00 y 23.");
         yyerror(err);
     }
 
     if (minute < 0 || minute > 59) {
-        sprintf(err, "Error en línea %d: Los minutos deben estar entre 00 y 59.", yylineno);
+        sprintf(err, "Error: Los minutos deben estar entre 00 y 59.");
         yyerror(err);
     }
 
@@ -101,7 +100,7 @@ void check_date(const char *dateTime) {
         (year == tm.tm_year + 1900 && month == tm.tm_mon + 1 && day > tm.tm_mday) ||
         (year == tm.tm_year + 1900 && month == tm.tm_mon + 1 && day == tm.tm_mday && hour > tm.tm_hour) ||
         (year == tm.tm_year + 1900 && month == tm.tm_mon + 1 && day == tm.tm_mday && hour == tm.tm_hour && minute > tm.tm_min)) {
-        sprintf(err, "Error en línea %d: La fecha y hora proporcionadas no pueden ser posteriores a la fecha y hora actual.", yylineno);
+        sprintf(err, "Error: La fecha y hora proporcionadas no pueden ser posteriores a la fecha y hora actual.");
         yyerror(err);
     }
 }
@@ -157,7 +156,7 @@ after_header:
     SEPARATE date_hour_tlf{ }
     | /* vacio */{
     	char err[256];
-        sprintf(err, "Error en línea %d: debe haber una separacion (-) entre la empresa y fecha/hora/tlf.", yylineno);
+        sprintf(err, "Error: debe haber una separacion (-) entre la empresa y fecha/hora/tlf.");
     	yyerror(err); 
     }
 ;
@@ -167,7 +166,7 @@ date_hour_tlf:
     	check_date($1);
     	if(strlen($2) != 13){
     	   char err[256];
-           sprintf(err, "Error en línea %d: El nummero de telefono debe tener 9 digitos.", yylineno);
+           sprintf(err, "Error: El nummero de telefono debe tener 9 digitos.");
     	   yyerror(err); 
     	}
 
@@ -181,7 +180,7 @@ date_hour_tlf:
 
         if (date == NULL || time == NULL) {
             char err[256];
-            sprintf(err, "Error en línea %d: Formato de fecha y hora incorrecto.", yylineno);
+            sprintf(err, "Error: Formato de fecha y hora incorrecto.");
             yyerror(err);
         }
 
@@ -195,7 +194,7 @@ date_hour_tlf:
     }
     | /* vacio */{
     	char err[256];
-        sprintf(err, "Error en línea %d: Obligatorio especificar solamente FECHA HORA TELEFONO en dicho orden", yylineno);
+        sprintf(err, "Error: Obligatorio especificar solamente FECHA HORA TELEFONO en dicho orden");
     	yyerror(err); 
     }
     
@@ -220,7 +219,7 @@ some_product:
     }
     | PRODUCT NEGATIVE_PRICE{
        char err[256];
-       sprintf(err, "Error en línea %d: No son válidos precios negativos [%s] para los productos", yylineno, $2);
+       sprintf(err, "Error: No son válidos precios negativos [%s] para los productos", $2);
        yyerror(err); 
     } 
 ;
@@ -243,7 +242,7 @@ total_price_line:
         
         if (round2(total_price) != round2(accumulated_price)) {
             char err[256];
-            sprintf(err, "Error en línea %d: precio total de compra [%.2f] no es igual a la suma de precios de los productos de la compra [%.2f]", yylineno, total_price, accumulated_price);
+            sprintf(err, "Error: precio total de compra [%.2f] no es igual a la suma de precios de los productos de la compra [%.2f]", total_price, accumulated_price);
     	    yyerror(err);
         }
         
@@ -251,7 +250,7 @@ total_price_line:
     }
     | /* vacio */{
     	char err[256];
-        sprintf(err, "Error en línea %d: Indicar correctamente TOTAL...: precio", yylineno);
+        sprintf(err, "Error: Indicar correctamente TOTAL...: precio");
     	yyerror(err); 
     }
 ;
@@ -295,7 +294,7 @@ element:
        
        if (rounded_cuota != cuota) {
             char err[256];
-            sprintf(err, "Error en línea %d: La cuota calculada %.2f no coincide con la cuota proporcionada %.2f", yylineno, rounded_cuota, cuota);
+            sprintf(err, "Error: La cuota calculada %.2f no coincide con la cuota proporcionada %.2f", rounded_cuota, cuota);
             yyerror(err);
         }
         
@@ -303,7 +302,7 @@ element:
         
         if (round2(expected_total) != total) {
             char err[256];
-            sprintf(err, "Error en línea %d: La suma de base + IVA (%.2f) no coincide con el total proporcionado %.2f", yylineno, expected_total, total);
+            sprintf(err, "Error: La suma de base + IVA (%.2f) no coincide con el total proporcionado %.2f", expected_total, total);
             yyerror(err);
         }
     }
@@ -463,7 +462,6 @@ extern FILE *yyin;
 		    fclose(output);
 		    product_count = 0;
 	    	    memset(product_list, 0, sizeof(product_list));
-	    	    yylineno = 1;
 		}
 	    }
 

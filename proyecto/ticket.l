@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include "ticket.tab.h"
 %}
-%option yylineno
 
 ws [ \t\n]+
 supermarket "**"([ ]+)[A-ZÁÉÍÓÚÑÇ ]+([ ]+)"**"
