@@ -73,7 +73,7 @@ void check_date(const char *dateTime) {
         yyerror(err);
     }
 
-    if (year < 2000 || year > 2025) {
+    if (year < 2000) {
         sprintf(err, "Error en línea %d: El año debe estar entre 2000 y 2025.", yylineno);
         yyerror(err);
     }

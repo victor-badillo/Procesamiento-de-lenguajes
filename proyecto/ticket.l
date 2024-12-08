@@ -10,7 +10,7 @@ separate [-]{32}
 separate2 [=]+
 date [0-9]{2}"/"[0-9]{2}"/"[0-9]{4} 
 hour [ ]+[0-9]{2}":"[0-9]{2}[ ]+
-tlf "Tlf:"[0-9]{9}
+tlf "Tlf:"[0-9]+
 text [0-9A-ZÁÉÍÓÚÑÇ,./-]+
 totalPurchase "TOTAL"[.]+":"
 total "TOTAL"[ \n]+
