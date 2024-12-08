@@ -482,11 +482,11 @@ extern FILE *yyin;
 		    yyparse();
 		    
 		    printf("Sintaxis de ticket correcta: %s\n", entry->d_name);
-		    
 		    fclose(yyin);
 		    fclose(output);
 		    product_count = 0;  // Resetear el contador de productos
 	    	    memset(product_list, 0, sizeof(product_list));
+	    	    yylineno = 1;
 		}
 	    }
 
