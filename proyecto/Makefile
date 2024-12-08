@@ -2,7 +2,7 @@ FUENTE = ticket
 FUENTE2 = query
 FUENTE3 = operations
 PRUEBA = ticketsRaw
-PRUEBA2 = querys/query4.txt
+PRUEBA2 = querys/query2.txt
 LIB = lfl -lm
 LIB2 = lfl
 
@@ -22,11 +22,8 @@ query:
 
 t1:
 	./$(FUENTE) $(PRUEBA)
-
-q1:
-	./$(FUENTE2) < $(PRUEBA2)
 	
-q2:
+q1:
 	./$(FUENTE2) $(PRUEBA2)
 
 clean:

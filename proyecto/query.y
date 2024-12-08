@@ -121,59 +121,59 @@ bool is_only_whitespace(const char *str) {
 }
 
 int main(int argc, char *argv[]) {
-extern FILE *yyin;
-char input[MAX_INPUT_SIZE];
-FILE *input_stream;
-printf("Intérprete interactivo de consultas...\n");
+   extern FILE *yyin;
+   char input[MAX_INPUT_SIZE];
+   FILE *input_stream;
+   printf("Consultas sobre tickets de la compra...\n");
     
-    switch (argc) {
-	case 1:	
-		while(true){
-			printf(">> ");
-        		fflush(stdout);
+   switch (argc) {
+      case 1:	
+         while(true){
+	    printf(">> ");
+            fflush(stdout);
         		
-        		if (fgets(input, sizeof(input), stdin) == NULL) {
-            			break;
-        		}
-        		
-        		
-        		// Comprobar si la línea está vacía
-    			if ((strlen(input) == 1 && input[0] == '\n') || is_only_whitespace(input)) {
-    				continue;  // Volver al inicio del bucle
-			}
+            if (fgets(input, sizeof(input), stdin) == NULL) {
+            	break;
+            }
         		
         		
-        		// Usar un flujo de memoria para pasar la entrada al parser
-        		input_stream = fmemopen(input, strlen(input), "r");
-        		if (input_stream == NULL) {
-            			perror("Error al procesar la entrada");
-            			continue;
-        		}
+            // Comprobar si la línea está vacía
+    	    if ((strlen(input) == 1 && input[0] == '\n') || is_only_whitespace(input)) {
+    		continue;  // Volver al inicio del bucle
+	    }
+        		
+        		
+            // Usar un flujo de memoria para pasar la entrada al parser
+            input_stream = fmemopen(input, strlen(input), "r");
+            if (input_stream == NULL) {
+                perror("Error al procesar la entrada");
+            	continue;
+            }
         			
-			yyin = input_stream;
-			yyparse();
+	    yyin = input_stream;
+	    yyparse();
 			
-			if (exit_program) {
-            			printf("Cerrando generador de consultas sobre tickets de la compra...\n");
-            			break;
-        		}
+	    if (exit_program) {
+                printf("Cerrando generador de consultas sobre tickets de la compra...\n");
+            	break;
+            }
         		
-			fclose(input_stream);
-		}
-		break;
+	    fclose(input_stream);
+	 }
+	 break;
 		
-	case 2:
-		yyin = fopen(argv[1], "r");
-		if (yyin == NULL) {
-		    printf("ERROR: No se ha podidooooooo abrir el fichero.\n");
-		} else {
-		    yyparse();
-		    fclose(yyin);
-		}
-		break;
-	default:
-		printf("ERROR: Demasiados argumentos.\nSintaxis: %s [fichero_entrada]\n\n", argv[0]);
-		exit(1);
+      case 2:
+	    yyin = fopen(argv[1], "r");
+	    if (yyin == NULL) {
+                printf("ERROR: No se ha podido abrir el fichero.\n");
+	    } else {
+		yyparse();
+		fclose(yyin);
+	    }
+	   break;
+      default:
+	    printf("ERROR: Demasiados argumentos.\nSintaxis: %s [fichero_entrada]\n\n", argv[0]);
+	    exit(1);
     }
     
 	

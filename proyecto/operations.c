@@ -215,16 +215,21 @@ BasicResult total(const char* ticket) {
 
     char line[MAX_LINE];
     double totalPrice = -1.0;  // Inicializar con un valor no válido
-
     // Leer línea por línea el archivo CSV
     while (fgets(line, MAX_LINE, file)) {
         // Buscar la línea que contiene el TOTAL del ticket
-        if (strncmp(line, "TOTAL......:", 12) == 0) {
-            // Extraer el precio total de la línea
-            char* totalStr = strchr(line, ':');  // Buscar el carácter ':' en la línea
-            if (totalStr) {
-                totalStr++;  // Moverse al siguiente carácter después de ':'
-                totalPrice = atof(totalStr);  // Convertir el valor total a un número
+        if (strncmp(line, "Supermercado,Fecha,Total", 24) == 0) {
+            while (fgets(line, MAX_LINE, file)) {
+
+		    char* supermercado = strtok(line, ",");
+		    char* fecha = strtok(NULL, ",");
+		    char* total = strtok(NULL, ",");
+		    
+		        
+		    if (total) {
+		        totalPrice = atof(total);  // Convertir el valor total a un número
+		        break; 
+		    }
             }
             break;  // Ya no necesitamos seguir leyendo
         }
@@ -277,8 +282,9 @@ BasicResult media(const char* ticket) {
 
                 if (producto && precio) {
                     double price = atof(precio);
+                    double quantity = atoi(cantidad);
                     totalPrice += price;
-                    productCount++;
+                    productCount+=quantity;
                 }
             }
             break;  // No necesitamos leer más secciones
@@ -298,7 +304,7 @@ BasicResult media(const char* ticket) {
 
     // Construir el resultado
     result.result = average;
-    asprintf(&result.output, "Media de precios de ticket%s: %.2f\n", ticket, average);
+    asprintf(&result.output, "Media de precios de %s: %.2f\n", ticket, average);
 
     return result;
 }
@@ -420,7 +426,7 @@ BasicResult totalproducto(const char* product, const char* ticket) {
 
 
 
-
+/*
 void fecha(const char* ticket) {
     // Construir la ruta del archivo CSV
     char filepath[MAX_LINE];
@@ -448,6 +454,41 @@ void fecha(const char* ticket) {
         }
     }
 
+    fclose(file);
+}
+*/
+
+void fecha(const char* ticket) {
+    // Construir la ruta del archivo CSV
+    char filepath[MAX_LINE];
+    snprintf(filepath, MAX_LINE, "ticketsData/%s.csv", ticket);
+
+    // Abrir el archivo CSV
+    FILE* file = fopen(filepath, "r");
+    if (file == NULL) {
+        fprintf(stderr, "Error: No se pudo abrir el archivo '%s'.\n", filepath);
+        return;
+    }
+
+    char line[MAX_LINE];
+
+    // Leer línea por línea el archivo CSV
+    while (fgets(line, MAX_LINE, file)) {
+    
+        if (strncmp(line, "Supermercado,Fecha,Total", 24) == 0) {
+            while (fgets(line, MAX_LINE, file)) {
+            	char* supermercado = strtok(line, ",");
+		char* fecha = strtok(NULL, ",");
+		char* total = strtok(NULL, ",");		    
+		        
+		if (fecha) {
+		    printf("Fecha de compra del ticket '%s': %s\n", ticket, fecha);
+		    break; 
+		}
+            }   
+        }     
+        break;   
+    }
     fclose(file);
 }
 
