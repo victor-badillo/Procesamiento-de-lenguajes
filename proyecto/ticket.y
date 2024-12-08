@@ -47,9 +47,6 @@ int getDaysInMonth(int month, int year) {
     return daysInMonth[month - 1];
 }
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
 
 void check_date(const char *dateTime) {
     int day, month, year;
@@ -410,68 +407,134 @@ int obtenerNumeroTicket(const char *nombreArchivo) {
     return -1; // Error si el formato no es válido
 }
 
+char *extractFileName(const char *path) {
+    const char *lastSlash = strrchr(path, '/'); // Encuentra la última '/'
+    const char *fileName = (lastSlash) ? lastSlash + 1 : path; // Si hay '/', avanza al siguiente carácter, sino usa path completo
+    
+    char *copy = malloc(strlen(fileName) + 1); // Reserva memoria para la copia
+    if (copy) {
+        strcpy(copy, fileName); // Copia el nombre del archivo
+    }
+    return copy; // Retorna la copia
+}
+
+
 
 int main(int argc, char *argv[]) {
 extern FILE *yyin;
 
 
     if (argc != 2) {
-        fprintf(stderr, "Uso: %s <directorio>\n", argv[0]);
+        fprintf(stderr, "Uso: %s (<directorio> | <ticketX.txt>)\n", argv[0]);
         return 1;
     }
     
-    const char *directorioEntrada = argv[1];
+    const char *path = argv[1];
+    struct stat path_stat;
+
+    // Obtener información sobre la ruta
+    if (stat(path, &path_stat) != 0) {
+        perror("Error al verificar la ruta");
+        return 1;
+    }
+    
     const char *directorioSalida = "ticketsData";
     
-    createDirectory(directorioSalida);
+    if (S_ISDIR(path_stat.st_mode)) {
     
-    DIR *dir = opendir(directorioEntrada);
-    if (dir == NULL) {
-        perror("No se pudo abrir el directorio");
+	    createDirectory(directorioSalida);
+	    
+	    DIR *dir = opendir(path);
+	    if (dir == NULL) {
+		perror("No se pudo abrir el directorio");
+		return 1;
+	    }
+	    
+	    struct dirent *entry;
+	    while ((entry = readdir(dir)) != NULL) {
+
+		if (strstr(entry->d_name, ".txt") != NULL) {
+		    int numeroTicket = obtenerNumeroTicket(entry->d_name);
+		    if (numeroTicket == -1) {
+		        fprintf(stderr, "Error: El archivo %s no tiene el formato esperado ticketX.txt\n", entry->d_name);
+		        continue;
+		    }
+
+		    char nombreSalida[256];
+		    snprintf(nombreSalida, sizeof(nombreSalida), "%s/ticket%d.csv", directorioSalida, numeroTicket);
+
+		    output = fopen(nombreSalida, "w");
+		    if (!output) {
+		        perror("No se pudo abrir el archivo de salida");
+		        continue;
+		    }
+
+		    char archivoEntrada[256];
+		    snprintf(archivoEntrada, sizeof(archivoEntrada), "%s/%s", path, entry->d_name);
+		    yyin = fopen(archivoEntrada, "r");
+		    
+		    if (!yyin) {
+		        perror("No se pudo abrir el archivo de entrada");
+		        fclose(output);
+		        continue;
+		    }
+
+		    yyparse();
+		    
+		    printf("Sintaxis de ticket correcta: %s\n", entry->d_name);
+		    
+		    fclose(yyin);
+		    fclose(output);
+		    product_count = 0;  // Resetear el contador de productos
+	    	    memset(product_list, 0, sizeof(product_list));
+		}
+	    }
+
+	     closedir(dir);
+    
+   } else if (strstr(path, "ticket") && strstr(path, ".txt")) {
+   
+   	//ARREGLAR ESTO
+   	char *fileName = extractFileName(path);
+
+        int numeroTicket = obtenerNumeroTicket(fileName);
+        if (numeroTicket == -1) {
+            fprintf(stderr, "Error: El archivo %s no tiene el formato esperado ticketX.txt\n", path);
+            return 1;
+        }
+
+        char nombreSalida[256];
+        snprintf(nombreSalida, sizeof(nombreSalida), "%s/ticket%d.csv",directorioSalida, numeroTicket);
+
+        createDirectory("ticketsData");
+
+        output = fopen(nombreSalida, "w");
+        if (!output) {
+            perror("No se pudo abrir el archivo de salida");
+            return 1;
+        }
+
+        yyin = fopen(path, "r");
+        if (!yyin) {
+            perror("No se pudo abrir el archivo de entrada");
+            fclose(output);
+            return 1;
+        }
+
+        yyparse();
+
+        printf("Sintaxis de ticket correcta: %s\n", path);
+
+        fclose(yyin);
+        fclose(output);
+        product_count = 0; // Resetear el contador de productos
+        memset(product_list, 0, sizeof(product_list));
+        free(fileName);
+        
+    } else {
+        fprintf(stderr, "El argumento no es ni un directorio ni un archivo ticketX.txt válido.\n");
         return 1;
     }
-    
-    struct dirent *entry;
-    while ((entry = readdir(dir)) != NULL) {
-
-        if (strstr(entry->d_name, ".txt") != NULL) {
-            int numeroTicket = obtenerNumeroTicket(entry->d_name);
-            if (numeroTicket == -1) {
-                fprintf(stderr, "Error: El archivo %s no tiene el formato esperado ticketX.txt\n", entry->d_name);
-                continue;
-            }
-
-            char nombreSalida[256];
-            snprintf(nombreSalida, sizeof(nombreSalida), "%s/ticket%d.csv", directorioSalida, numeroTicket);
-
-            output = fopen(nombreSalida, "w");
-            if (!output) {
-                perror("No se pudo abrir el archivo de salida");
-                continue;
-            }
-
-            char archivoEntrada[256];
-            snprintf(archivoEntrada, sizeof(archivoEntrada), "%s/%s", directorioEntrada, entry->d_name);
-            yyin = fopen(archivoEntrada, "r");
-            
-            if (!yyin) {
-                perror("No se pudo abrir el archivo de entrada");
-                fclose(output);
-                continue;
-            }
-
-            yyparse();
-            
-            printf("Sintaxis de ticket correcta: %s\n", entry->d_name);
-            
-            fclose(yyin);
-            fclose(output);
-            product_count = 0;  // Resetear el contador de productos
-    	    memset(product_list, 0, sizeof(product_list));
-        }
-    }
-
-    closedir(dir);
     
     free(supermarket_CSV);
     free(date_CSV);
@@ -483,8 +546,5 @@ extern FILE *yyin;
     total_CSV = NULL;
     date_time_copy = NULL;
     
-    printf("Sintaxis de ticket correcta.\n");
     return 0;
 }
-
-

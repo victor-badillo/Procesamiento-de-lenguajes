@@ -20,16 +20,13 @@ query:
 	bison -o $(FUENTE2).tab.c $(FUENTE2).y -yd
 	gcc -o $(FUENTE2) $(FUENTE2).lex.yy.c $(FUENTE2).tab.c $(FUENTE3).c -$(LIB2) -ly
 
-run:
-	./$(FUENTE) < $(PRUEBA)
-
-run2:
+t1:
 	./$(FUENTE) $(PRUEBA)
 
-runquery:
+q1:
 	./$(FUENTE2) < $(PRUEBA2)
 	
-runquery2:
+q2:
 	./$(FUENTE2) $(PRUEBA2)
 
 clean:
