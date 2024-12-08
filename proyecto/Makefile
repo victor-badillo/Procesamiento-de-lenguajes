@@ -6,7 +6,7 @@ PRUEBA2 = querys/query4.txt
 LIB = lfl -lm
 LIB2 = lfl
 
-all: ticket
+all: query
 
 ticket:
 	flex $(FUENTE).l
@@ -30,7 +30,7 @@ q2:
 	./$(FUENTE2) $(PRUEBA2)
 
 clean:
-	rm $(FUENTE) $(FUENTE).lex.yy.c $(FUENTE).tab.c $(FUENTE).tab.h
+	rm -f $(FUENTE) $(FUENTE).lex.yy.c $(FUENTE).tab.c $(FUENTE).tab.h
 
 clean2:
 	rm -f $(FUENTE2) $(FUENTE2).lex.yy.c $(FUENTE2).tab.c $(FUENTE2).tab.h $(FUENTE3).o
