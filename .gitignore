@@ -1,4 +1,6 @@
 lex.yy.c
+ticket.lex.yy.c
+query.lex.yy.c
 practica1
 practica2
 ticket
