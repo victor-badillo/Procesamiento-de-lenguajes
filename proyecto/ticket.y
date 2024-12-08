@@ -10,9 +10,7 @@
 #include <dirent.h>
 #include <time.h>
 
-
 #define MAX_PRODUCTS 100
-
 
 typedef struct {
     char product_name[256];
@@ -51,21 +49,19 @@ int getDaysInMonth(int month, int year) {
 void check_date(const char *dateTime) {
     int day, month, year;
     int hour, minute;
-    char date[11], time_str[6]; // Renombré la variable 'time' a 'time_str'
+    char date[11], time_str[6];
     char err[256];
     
-    if (sscanf(dateTime, "%10s %5s", date, time_str) != 2) {  // Cambié 'time' a 'time_str'
+    if (sscanf(dateTime, "%10s %5s", date, time_str) != 2) {
         sprintf(err, "Error en línea %d: Formato de fecha y hora incorrecto.", yylineno);
         yyerror(err);
     }
 
-    // Verificación del formato de la fecha
     if (sscanf(date, "%2d/%2d/%4d", &day, &month, &year) != 3) {
         sprintf(err, "Error en línea %d: Formato de fecha incorrecto.", yylineno);
         yyerror(err);
     }
 
-    // Validación del mes
     if (month < 1 || month > 12) {
         sprintf(err, "Error en línea %d: El mes debe estar entre 01 y 12.", yylineno);
         yyerror(err);
@@ -77,19 +73,16 @@ void check_date(const char *dateTime) {
         yyerror(err);
     }
 
-    // Validación del año (2000-2025)
     if (year < 2000 || year > 2025) {
         sprintf(err, "Error en línea %d: El año debe estar entre 2000 y 2025.", yylineno);
         yyerror(err);
     }
 
-    // Verificación del formato de la hora
-    if (sscanf(time_str, "%2d:%2d", &hour, &minute) != 2) {  // Cambié 'time' a 'time_str'
+    if (sscanf(time_str, "%2d:%2d", &hour, &minute) != 2) {
         sprintf(err, "Error en línea %d: Formato de hora incorrecto.", yylineno);
         yyerror(err);
     }
 
-    // Validación de la hora y minutos
     if (hour < 0 || hour > 23) {
         sprintf(err, "Error en línea %d: La hora debe estar entre 00 y 23.", yylineno);
         yyerror(err);
@@ -100,16 +93,14 @@ void check_date(const char *dateTime) {
         yyerror(err);
     }
 
-    // Obtener la fecha y hora actuales
-    time_t t = time(NULL);            // Obtiene el tiempo actual
-    struct tm tm = *localtime(&t);    // Convierte el tiempo en estructura tm
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
 
-    // Comprobar si la fecha proporcionada es mayor que la fecha actual
-    if (year > tm.tm_year + 1900 || // Año mayor
-        (year == tm.tm_year + 1900 && month > tm.tm_mon + 1) || // Mes mayor
-        (year == tm.tm_year + 1900 && month == tm.tm_mon + 1 && day > tm.tm_mday) || // Día mayor
-        (year == tm.tm_year + 1900 && month == tm.tm_mon + 1 && day == tm.tm_mday && hour > tm.tm_hour) || // Hora mayor
-        (year == tm.tm_year + 1900 && month == tm.tm_mon + 1 && day == tm.tm_mday && hour == tm.tm_hour && minute > tm.tm_min)) { // Minuto mayor
+    if (year > tm.tm_year + 1900 ||
+        (year == tm.tm_year + 1900 && month > tm.tm_mon + 1) ||
+        (year == tm.tm_year + 1900 && month == tm.tm_mon + 1 && day > tm.tm_mday) ||
+        (year == tm.tm_year + 1900 && month == tm.tm_mon + 1 && day == tm.tm_mday && hour > tm.tm_hour) ||
+        (year == tm.tm_year + 1900 && month == tm.tm_mon + 1 && day == tm.tm_mday && hour == tm.tm_hour && minute > tm.tm_min)) {
         sprintf(err, "Error en línea %d: La fecha y hora proporcionadas no pueden ser posteriores a la fecha y hora actual.", yylineno);
         yyerror(err);
     }
@@ -145,7 +136,6 @@ double round2(double value){
 void trim_right(char *str) {
     int length = strlen(str);
     
-    // Recorre desde el final hacia el principio y elimina los espacios
     while (length > 0 && isspace(str[length - 1])) {
         str[length - 1] = '\0';
         length--;
@@ -176,7 +166,7 @@ void writeCSV(){
 }
 
 %token <str> HEADER PURCHASEDATE TOTALPURCHASE PRICE PRODUCT PHONE_NUMBER NEGATIVE_PRICE 
-%token SEPARATE SEPARATE2 BASE IVA CUOTA TOTAL GOODBYE NO_VALID
+%token SEPARATE SEPARATE2 BASE IVA CUOTA TOTAL GOODBYE
 %%
 
 ticket:
@@ -206,7 +196,7 @@ date_hour_tlf:
            sprintf(err, "Error en línea %d: El nummero de telefono debe tener 9 digitos.", yylineno);
     	   yyerror(err); 
     	}
-    	 // Copiar la cadena de fecha y hora para evitar modificar la original
+
         date_time_copy = strdup($1);
         if (date_time_copy == NULL) {
             yyerror("Error al copiar la fecha y hora.");
@@ -245,12 +235,10 @@ after_date_hour_tlf:
 
 ;
 
-
 list_products:
     list_products some_product 
     | /* vacio */
 ;
-
 
 some_product:
     PRODUCT PRICE{
@@ -308,7 +296,6 @@ taxes:
     }
 ;
 
-
 strong_separation:
     SEPARATE2 SEPARATE2 SEPARATE2 SEPARATE2 calculate after_taxes{ }
     | /* vacio */{
@@ -321,7 +308,6 @@ calculate:
     | /* vacio */
 
 ;
-
 
 element: 
     PRICE PRICE PRICE PRICE {
@@ -346,11 +332,7 @@ element:
             sprintf(err, "Error en línea %d: La suma de base + IVA (%.2f) no coincide con el total proporcionado %.2f", yylineno, expected_total, total);
             yyerror(err);
         }
-
-       
     }
-
-
 ;
 
 after_taxes:
@@ -368,8 +350,6 @@ end:
 ;
 
 
-
-
 %%
 
 void createDirectory(const char *directory) {
@@ -384,38 +364,37 @@ void yyerror(const char *error) {
     exit(0);
 }
 
-int obtenerNumeroTicket(const char *nombreArchivo) {
-    const char *prefijo = "ticket";
+int obtainTicketNum(const char *archiveName) {
+    const char *pre = "ticket";
     const char *ext = ".txt";
-    size_t lenPrefijo = strlen(prefijo);
+    size_t lenPre = strlen(pre);
     size_t lenExt = strlen(ext);
-    size_t lenNombre = strlen(nombreArchivo);
+    size_t lenName = strlen(archiveName);
 
-    // Verifica que el nombre comience con "ticket" y termine con ".txt"
-    if (lenNombre > lenPrefijo + lenExt && 
-        strncmp(nombreArchivo, prefijo, lenPrefijo) == 0 && 
-        strcmp(nombreArchivo + lenNombre - lenExt, ext) == 0) {
+    //Verifica que el nombre comience con "ticket" y termine con ".txt"
+    if (lenName > lenPre + lenExt && 
+        strncmp(archiveName, pre, lenPre) == 0 && 
+        strcmp(archiveName + lenName - lenExt, ext) == 0) {
         
-        // Extrae los dígitos después de "ticket"
-        const char *numeroInicio = nombreArchivo + lenPrefijo;
-        while (*numeroInicio && isdigit(*numeroInicio)) {
-            numeroInicio++;
+        //Extrae el numero después de "ticket"
+        const char *initNum = archiveName + lenPre;
+        while (*initNum && isdigit(*initNum)) {
+            initNum++;
         }
         
-        return atoi(nombreArchivo + lenPrefijo);
+        return atoi(archiveName + lenPre);
     }
-    return -1; // Error si el formato no es válido
+    return -1;
 }
 
 char *extractFileName(const char *path) {
-    const char *lastSlash = strrchr(path, '/'); // Encuentra la última '/'
-    const char *fileName = (lastSlash) ? lastSlash + 1 : path; // Si hay '/', avanza al siguiente carácter, sino usa path completo
-    
-    char *copy = malloc(strlen(fileName) + 1); // Reserva memoria para la copia
+    const char *lastSlash = strrchr(path, '/');
+    const char *fileName = (lastSlash) ? lastSlash + 1 : path;
+    char *copy = malloc(strlen(fileName) + 1);
     if (copy) {
-        strcpy(copy, fileName); // Copia el nombre del archivo
+        strcpy(copy, fileName);
     }
-    return copy; // Retorna la copia
+    return copy;
 }
 
 
@@ -438,11 +417,11 @@ extern FILE *yyin;
         return 1;
     }
     
-    const char *directorioSalida = "ticketsData";
+    const char *outDirectory = "ticketsData";
     
     if (S_ISDIR(path_stat.st_mode)) {
     
-	    createDirectory(directorioSalida);
+	    createDirectory(outDirectory);
 	    
 	    DIR *dir = opendir(path);
 	    if (dir == NULL) {
@@ -454,24 +433,24 @@ extern FILE *yyin;
 	    while ((entry = readdir(dir)) != NULL) {
 
 		if (strstr(entry->d_name, ".txt") != NULL) {
-		    int numeroTicket = obtenerNumeroTicket(entry->d_name);
-		    if (numeroTicket == -1) {
+		    int ticketNum = obtainTicketNum(entry->d_name);
+		    if (ticketNum == -1) {
 		        fprintf(stderr, "Error: El archivo %s no tiene el formato esperado ticketX.txt\n", entry->d_name);
 		        continue;
 		    }
 
-		    char nombreSalida[256];
-		    snprintf(nombreSalida, sizeof(nombreSalida), "%s/ticket%d.csv", directorioSalida, numeroTicket);
+		    char outName[256];
+		    snprintf(outName, sizeof(outName), "%s/ticket%d.csv", outDirectory, ticketNum);
 
-		    output = fopen(nombreSalida, "w");
+		    output = fopen(outName, "w");
 		    if (!output) {
 		        perror("No se pudo abrir el archivo de salida");
 		        continue;
 		    }
 
-		    char archivoEntrada[256];
-		    snprintf(archivoEntrada, sizeof(archivoEntrada), "%s/%s", path, entry->d_name);
-		    yyin = fopen(archivoEntrada, "r");
+		    char inputFile[256];
+		    snprintf(inputFile, sizeof(inputFile), "%s/%s", path, entry->d_name);
+		    yyin = fopen(inputFile, "r");
 		    
 		    if (!yyin) {
 		        perror("No se pudo abrir el archivo de entrada");
@@ -484,7 +463,7 @@ extern FILE *yyin;
 		    printf("Sintaxis de ticket correcta: %s\n", entry->d_name);
 		    fclose(yyin);
 		    fclose(output);
-		    product_count = 0;  // Resetear el contador de productos
+		    product_count = 0;
 	    	    memset(product_list, 0, sizeof(product_list));
 	    	    yylineno = 1;
 		}
@@ -494,21 +473,20 @@ extern FILE *yyin;
     
    } else if (strstr(path, "ticket") && strstr(path, ".txt")) {
    
-   	//ARREGLAR ESTO
    	char *fileName = extractFileName(path);
 
-        int numeroTicket = obtenerNumeroTicket(fileName);
-        if (numeroTicket == -1) {
+        int ticketNum = obtainTicketNum(fileName);
+        if (ticketNum  == -1) {
             fprintf(stderr, "Error: El archivo %s no tiene el formato esperado ticketX.txt\n", path);
             return 1;
         }
 
-        char nombreSalida[256];
-        snprintf(nombreSalida, sizeof(nombreSalida), "%s/ticket%d.csv",directorioSalida, numeroTicket);
+        char outName[256];
+        snprintf(outName, sizeof(outName), "%s/ticket%d.csv",outDirectory, ticketNum);
 
         createDirectory("ticketsData");
 
-        output = fopen(nombreSalida, "w");
+        output = fopen(outName, "w");
         if (!output) {
             perror("No se pudo abrir el archivo de salida");
             return 1;
@@ -527,7 +505,7 @@ extern FILE *yyin;
 
         fclose(yyin);
         fclose(output);
-        product_count = 0; // Resetear el contador de productos
+        product_count = 0;
         memset(product_list, 0, sizeof(product_list));
         free(fileName);
         

@@ -1,6 +1,5 @@
 %{
 #include <stdio.h>
-#include <string.h>
 #include "ticket.tab.h"
 %}
 %option yylineno
@@ -41,6 +40,6 @@ header {supermarket}[0-9A-ZÁÉÍÓÚÑÇ,./ \n]+
 {negativePrice}	{ yylval.str = strdup(yytext);  printf("NEGATIVE_PRICE\n"); return NEGATIVE_PRICE; }
 {goodbye}	{ printf("GOODBYE\n"); return GOODBYE; }
 {product}	{ yylval.str = strdup(yytext); printf("PRODUCT\n"); return PRODUCT; }
-.               { printf("Carácter desconocido: %s, en la línea %d\n", yytext, yylineno); return NO_VALID; }
+.               { printf("Carácter desconocido: %s, en la línea %d\n", yytext, yylineno); }
 %%
 
