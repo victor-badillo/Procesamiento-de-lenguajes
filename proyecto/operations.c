@@ -10,39 +10,39 @@ void print_help() {
     printf("-------------------------------------------------------------------------------------\n");
     
     printf("Operaciones básicas (no combinables):\n");
-    printf("  caro(ticketX) -> int\n");
+    printf("  caro(ticketX) -> double\n");
     printf("      - Devuelve el producto más caro del ticket.\n");
     printf("      - Salida: product: xx.xx\n");
     
-    printf("  barato(ticketX) -> int\n");
+    printf("  barato(ticketX) -> double\n");
     printf("      - Devuelve el producto más barato del ticket.\n");
     
-    printf("  total(ticketX) -> int\n");
+    printf("  total(ticketX) -> double\n");
     printf("      - Devuelve el precio total de un ticket.\n");
     
-    printf("  media(ticketX) -> int\n");
+    printf("  media(ticketX) -> double\n");
     printf("      - Devuelve la media de precio de los productos en un ticket.\n");
     
-    printf("  precio(producto, ticketX) -> int\n");
+    printf("  precio(producto, ticketX) -> double\n");
     printf("      - Devuelve el precio de un producto específico en un ticket.\n");
     
-    printf("  totalProducto(producto, ticketX) -> int\n");
+    printf("  totalProducto(producto, ticketX) -> double\n");
     printf("      - Devuelve el precio total de un producto en un ticket (cantidad * precio).\n");
     
     printf("\nOperaciones específicas (no combinables):\n");
-    printf("  fecha(ticketX) -> string\n");
+    printf("  fecha(ticketX) -> void\n");
     printf("      - Imprime la fecha de compra de un ticket.\n");
     
-    printf("  supermercado(ticketX) -> string\n");
+    printf("  supermercado(ticketX) -> void\n");
     printf("      - Imprime el supermercado en el que se realizó la compra.\n");
     printf("  ordenar(mayor/menor, ticketX)\n");
     printf("      - Imprime por pantalla los productos ordenados por precio de mayor a menor o viceversa.\n");
     
-    printf("  verTicket(ticketX)\n");
+    printf("  verTicket(ticketX) -> void\n");
     printf("      - Imprime por pantalla el contenido del ticket en formato de archivo .txt.\n");
     
     printf("\nOperación combinable:\n");
-    printf("  desdeHasta(fecha1, fecha2)\n");
+    printf("  desdeHasta(fecha1, fecha2) -> void\n");
     printf("      - Devuelve los tickets (archivos .txt) que están en el rango de fechas especificado.\n");
     printf("      - Verifica las fechas en los archivos .csv.\n");
     printf("      - Puede combinarse con operaciones básicas usando AND y OR.\n");
@@ -92,6 +92,7 @@ BasicResult caro(const char* ticket) {
                 char* producto = strtok(line, ";");
                 char* cantidad = strtok(NULL, ";");
                 char* precio = strtok(NULL, ";");
+                
 
                 if (producto && precio) {
                     double price = atof(precio);
@@ -153,12 +154,12 @@ BasicResult barato(const char* ticket) {
     // Leer línea por línea el archivo CSV
     while (fgets(line, MAX_LINE, file)) {
         // Buscar la sección de productos
-        if (strncmp(line, "Producto,Cantidad,Precio", 24) == 0) {
+        if (strncmp(line, "Producto;Cantidad;Precio", 24) == 0) {
             // Procesar las líneas de productos
             while (fgets(line, MAX_LINE, file)) {
-                char* producto = strtok(line, ",");
-                char* cantidad = strtok(NULL, ",");
-                char* precio = strtok(NULL, ",");
+                char* producto = strtok(line, ";");
+                char* cantidad = strtok(NULL, ";");
+                char* precio = strtok(NULL, ";");
 
                 if (producto && precio) {
                     double price = atof(precio);
@@ -270,12 +271,12 @@ BasicResult media(const char* ticket) {
     // Leer línea por línea el archivo CSV
     while (fgets(line, MAX_LINE, file)) {
         // Buscar la sección de productos
-        if (strncmp(line, "Producto,Cantidad,Precio", 24) == 0) {
+        if (strncmp(line, "Producto;Cantidad;Precio", 24) == 0) {
             // Procesar las líneas de productos
             while (fgets(line, MAX_LINE, file)) {
-                char* producto = strtok(line, ",");
-                char* cantidad = strtok(NULL, ",");
-                char* precio = strtok(NULL, ",");
+                char* producto = strtok(line, ";");
+                char* cantidad = strtok(NULL, ";");
+                char* precio = strtok(NULL, ";");
 
                 if (producto && precio) {
                     double price = atof(precio);
@@ -330,12 +331,12 @@ BasicResult precio(const char* product, const char* ticket) {
     // Leer línea por línea el archivo CSV
     while (fgets(line, MAX_LINE, file)) {
         // Buscar la sección de productos
-        if (strncmp(line, "Producto,Cantidad,Precio", 24) == 0) {
+        if (strncmp(line, "Producto;Cantidad;Precio", 24) == 0) {
             // Procesar las líneas de productos
             while (fgets(line, MAX_LINE, file)) {
-                char* producto = strtok(line, ",");
-                char* cantidad = strtok(NULL, ",");
-                char* precio = strtok(NULL, ",");
+                char* producto = strtok(line, ";");
+                char* cantidad = strtok(NULL, ";");
+                char* precio = strtok(NULL, ";");
 
                 if (producto && precio && cantidad) {
                     if (strcmp(producto, product) == 0) {
@@ -388,12 +389,12 @@ BasicResult totalproducto(const char* product, const char* ticket) {
     // Leer línea por línea el archivo CSV
     while (fgets(line, MAX_LINE, file)) {
         // Buscar la sección de productos
-        if (strncmp(line, "Producto,Cantidad,Precio", 24) == 0) {
+        if (strncmp(line, "Producto;Cantidad;Precio", 24) == 0) {
             // Procesar las líneas de productos
             while (fgets(line, MAX_LINE, file)) {
-                char* producto = strtok(line, ",");
-                char* cantidad = strtok(NULL, ",");
-                char* precio = strtok(NULL, ",");
+                char* producto = strtok(line, ";");
+                char* cantidad = strtok(NULL, ";");
+                char* precio = strtok(NULL, ";");
 
                 if (producto && precio) {
                     if (strcmp(producto, product) == 0) {
@@ -472,11 +473,10 @@ void fecha(const char* ticket) {
     // Leer línea por línea el archivo CSV
     while (fgets(line, MAX_LINE, file)) {
     
-        if (line[0] == '"' && line[1] == ',') {
+        if (strncmp(line, "Supermercado;Fecha;Total", 24) == 0) {
             while (fgets(line, MAX_LINE, file)) {
-            	char* supermercado = strtok(line, ",");
-		char* fecha = strtok(NULL, ",");
-		char* total = strtok(NULL, ",");		    
+            	char* supermercado = strtok(line, ";");
+		char* fecha = strtok(NULL, ";");
 		        
 		if (fecha) {
 		    printf("Fecha de compra del ticket '%s': %s\n", ticket, fecha);
@@ -504,22 +504,20 @@ void supermercado(const char* ticket) {
 
     char line[MAX_LINE];
 
-    // Leer la primera línea del archivo CSV que contiene el supermercado
-    if (fgets(line, MAX_LINE, file)) {
-        // La primera columna contiene el supermercado con comillas al principio y al final
-        char* supermercado = strtok(line, ",");  // El primer campo es "Supermercado"
-
-        // Eliminamos las comillas del principio y final del nombre del supermercado
-        if (supermercado) {
-            // Si hay comillas, las eliminamos
-            if (supermercado[0] == '"') {
-                supermercado++;  // Saltar la primera comilla
-                supermercado[strlen(supermercado) - 1] = '\0';  // Eliminar la última comilla
-            }
-
-            // Imprimir el nombre del supermercado
-            printf("Supermercado donde se realizó la compra '%s':\n %s\n", ticket, supermercado);
-        }
+    // Leer línea por línea el archivo CSV
+    while (fgets(line, MAX_LINE, file)) {
+    
+        if (strncmp(line, "Supermercado;Fecha;Total", 24) == 0) {
+            while (fgets(line, MAX_LINE, file)) {
+            	char* supermercado = strtok(line, ";");
+		        
+		if (supermercado) {
+		    printf("Supermercado de compra de '%s': \n%s\n", ticket, supermercado);
+		    break; 
+		}
+            }   
+        }     
+        break;   
     }
 
     fclose(file);
