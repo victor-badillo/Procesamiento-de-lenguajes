@@ -133,6 +133,33 @@ double round2(double value){
 }
 
 
+char* replace_newlines(const char *str) {
+    if (str == NULL) {
+        return NULL; 
+    }
+
+    size_t length = strlen(str);
+
+    char *new_str = malloc(length + 1); 
+    if (new_str == NULL) {
+        perror("Error al reservar memoria");
+        return NULL;
+    }
+
+    for (size_t i = 0; i < length; i++) {
+        if (str[i] == '\n') {
+            new_str[i] = '|';
+        } else {
+            new_str[i] = str[i];
+        }
+    }
+
+    new_str[length] = '\0';
+
+    return new_str;
+}
+
+
 
 %}
 %union {
@@ -145,7 +172,10 @@ double round2(double value){
 
 ticket:
     HEADER after_header {
-        supermarket_CSV = strdup($1);
+    	char *clean_header = replace_newlines($1);
+    	printf("\n%s\n", clean_header);
+    	
+        supermarket_CSV = clean_header;
     }
     | /* vacio */{
         yyerror("Error: lo primero definido en un ticket debe ser la cabecera con el supermercado, calle y empresa.");
