@@ -412,12 +412,12 @@ void trim_right(char *str) {
 
 void writeCSV(){
 
-   fprintf(output, "Supermercado,Fecha,Total\n");
-   fprintf(output, "\"%s\",%s,%s\n", supermarket_CSV, date_CSV, total_CSV);
-   fprintf(output, "Producto,Cantidad,Precio\n");
+   fprintf(output, "Supermercado;Fecha;Total\n");
+   fprintf(output, "\"%s\";%s;%s\n", supermarket_CSV, date_CSV, total_CSV);
+   fprintf(output, "Producto;Cantidad;Precio\n");
    for (int i = 0; i < product_count; i++) {
         trim_right(product_list[i].product_name);
-        fprintf(output, "\"%s\",%d,%.2f\n",
+        fprintf(output, "\"%s\";%d;%.2f\n",
                 product_list[i].product_name,
                 product_list[i].quantity,
                 product_list[i].total_price);
