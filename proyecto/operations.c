@@ -11,14 +11,13 @@ void print_help() {
     
     printf("Operaciones básicas (no combinables):\n");
     printf("  caro(ticketX) -> double\n");
-    printf("      - Devuelve el producto más caro del ticket.\n");
-    printf("      - Salida: product: xx.xx\n");
+    printf("      - Devuelve el producto más caro del ticket en total.\n");
     
     printf("  barato(ticketX) -> double\n");
-    printf("      - Devuelve el producto más barato del ticket.\n");
+    printf("      - Devuelve el producto más barato del ticket en total.\n");
     
     printf("  total(ticketX) -> double\n");
-    printf("      - Devuelve el precio total de un ticket.\n");
+    printf("      - Devuelve el precio total de la compra.\n");
     
     printf("  media(ticketX) -> double\n");
     printf("      - Devuelve la media de precio de los productos en un ticket.\n");
@@ -29,14 +28,14 @@ void print_help() {
     printf("  totalProducto(producto, ticketX) -> double\n");
     printf("      - Devuelve el precio total de un producto en un ticket (cantidad * precio).\n");
     
-    printf("\nOperaciones específicas (no combinables):\n");
+    printf("\nOperaciones de impresión por pantalla(no combinables):\n");
     printf("  fecha(ticketX) -> void\n");
     printf("      - Imprime la fecha de compra de un ticket.\n");
     
     printf("  supermercado(ticketX) -> void\n");
     printf("      - Imprime el supermercado en el que se realizó la compra.\n");
     printf("  ordenar(mayor/menor, ticketX)\n");
-    printf("      - Imprime por pantalla los productos ordenados por precio de mayor a menor o viceversa.\n");
+    printf("      - Imprime por pantalla los productos de un ticket ordenados por precio de mayor a menor o viceversa.\n");
     
     printf("  verTicket(ticketX) -> void\n");
     printf("      - Imprime por pantalla el contenido del ticket en formato de archivo .txt.\n");
@@ -58,21 +57,20 @@ void print_help() {
     
     printf("\nNotas:\n");
     printf("  - Las operaciones con AND y OR devuelven los archivos .txt de los tickets que cumplen las condiciones.\n");
-    printf("  - Para todas las operaciones se esperan nombres de tickets en el formato \"ticketX\", donde X es un número.\n");
+    printf("  - Para todas las operaciones se esperan nombres de tickets en el formato \"ticketX\", donde X es un número entero.\n");
     printf("  - Los nombres de productos van entre comillas dobles y en mayusculas.\n");
+    printf("  - El formato de fechas es dd/mm/yyyyThh:mm.\n");
     printf("-------------------------------------------------------------------------------------\n");
 }
 
 BasicResult caro(const char* ticket) {
     BasicResult result;
-    result.result = -1.0;  // Valor inicial para identificar errores.
+    result.result = -1.0;
     result.output = NULL;
 
-    // Construir la ruta del archivo CSV
     char filepath[MAX_LINE];
     snprintf(filepath, MAX_LINE, "ticketsData/%s.csv", ticket);
 
-    // Abrir el archivo CSV
     FILE* file = fopen(filepath, "r");
     if (file == NULL) {
         fprintf(stderr, "Error: No se pudo abrir el archivo '%s'.\n", filepath);
@@ -83,11 +81,10 @@ BasicResult caro(const char* ticket) {
     double maxPrice = -1.0;
     char* maxProduct = NULL;
 
-    // Leer línea por línea el archivo CSV
     while (fgets(line, MAX_LINE, file)) {
-        // Buscar la sección de productos
+
         if (strncmp(line, "Producto;Cantidad;Precio", 24) == 0) {
-            // Procesar las líneas de productos
+
             while (fgets(line, MAX_LINE, file)) {
                 char* producto = strtok(line, ";");
                 char* cantidad = strtok(NULL, ";");
@@ -99,33 +96,28 @@ BasicResult caro(const char* ticket) {
                     if (price > maxPrice) {
                         maxPrice = price;
 
-                        // Liberar memoria previa del producto más caro
                         if (maxProduct) {
                             free(maxProduct);
                         }
 
-                        // Guardar el nuevo producto más caro
                         maxProduct = strdup(producto);
                     }
                 }
             }
-            break;  // No necesitamos leer más secciones.
+            break;
         }
     }
 
     fclose(file);
 
-    // Verificar si se encontró un producto
     if (maxPrice == -1.0 || maxProduct == NULL) {
         fprintf(stderr, "Error: No se encontraron productos en '%s'.\n", filepath);
         return result;
     }
 
-    // Construir el resultado
     result.result = maxPrice;
-    asprintf(&result.output, "Producto más caro: \"%s\" >> %.2f\n", maxProduct, maxPrice);
+    asprintf(&result.output, "Producto más caro: %s >> %.2f\n", maxProduct, maxPrice);
 
-    // Liberar memoria del producto
     free(maxProduct);
 
     return result;
@@ -133,14 +125,12 @@ BasicResult caro(const char* ticket) {
 
 BasicResult barato(const char* ticket) {
     BasicResult result;
-    result.result = -1.0;  // Valor inicial para identificar errores.
+    result.result = -1.0;
     result.output = NULL;
 
-    // Construir la ruta del archivo CSV
     char filepath[MAX_LINE];
     snprintf(filepath, MAX_LINE, "ticketsData/%s.csv", ticket);
 
-    // Abrir el archivo CSV
     FILE* file = fopen(filepath, "r");
     if (file == NULL) {
         fprintf(stderr, "Error: No se pudo abrir el archivo '%s'.\n", filepath);
@@ -148,14 +138,13 @@ BasicResult barato(const char* ticket) {
     }
 
     char line[MAX_LINE];
-    double minPrice = -1.0;  // Inicializar con un valor alto
+    double minPrice = -1.0;
     char* minProduct = NULL;
 
-    // Leer línea por línea el archivo CSV
     while (fgets(line, MAX_LINE, file)) {
-        // Buscar la sección de productos
+
         if (strncmp(line, "Producto;Cantidad;Precio", 24) == 0) {
-            // Procesar las líneas de productos
+
             while (fgets(line, MAX_LINE, file)) {
                 char* producto = strtok(line, ";");
                 char* cantidad = strtok(NULL, ";");
@@ -166,33 +155,28 @@ BasicResult barato(const char* ticket) {
                     if (minPrice == -1.0 || price < minPrice) {
                         minPrice = price;
 
-                        // Liberar memoria previa del producto más barato
                         if (minProduct) {
                             free(minProduct);
                         }
 
-                        // Guardar el nuevo producto más barato
                         minProduct = strdup(producto);
                     }
                 }
             }
-            break;  // No necesitamos leer más secciones
+            break;
         }
     }
 
     fclose(file);
 
-    // Verificar si se encontró un producto
     if (minPrice == -1.0 || minProduct == NULL) {
         fprintf(stderr, "Error: No se encontraron productos en '%s'.\n", filepath);
         return result;
     }
 
-    // Construir el resultado
     result.result = minPrice;
-    asprintf(&result.output, "Producto más barato: \"%s\" >> %.2f\n", minProduct, minPrice);
+    asprintf(&result.output, "Producto más barato: %s >> %.2f\n", minProduct, minPrice);
 
-    // Liberar memoria del producto
     free(minProduct);
 
     return result;
@@ -250,14 +234,12 @@ BasicResult total(const char* ticket) {
 
 BasicResult media(const char* ticket) {
     BasicResult result;
-    result.result = -1.0;  // Valor inicial para identificar errores
+    result.result = -1.0;
     result.output = NULL;
 
-    // Construir la ruta del archivo CSV
     char filepath[MAX_LINE];
     snprintf(filepath, MAX_LINE, "ticketsData/%s.csv", ticket);
 
-    // Abrir el archivo CSV
     FILE* file = fopen(filepath, "r");
     if (file == NULL) {
         fprintf(stderr, "Error: No se pudo abrir el archivo '%s'.\n", filepath);
@@ -268,11 +250,10 @@ BasicResult media(const char* ticket) {
     double totalPrice = 0.0;
     int productCount = 0;
 
-    // Leer línea por línea el archivo CSV
     while (fgets(line, MAX_LINE, file)) {
-        // Buscar la sección de productos
+
         if (strncmp(line, "Producto;Cantidad;Precio", 24) == 0) {
-            // Procesar las líneas de productos
+
             while (fgets(line, MAX_LINE, file)) {
                 char* producto = strtok(line, ";");
                 char* cantidad = strtok(NULL, ";");
@@ -285,22 +266,19 @@ BasicResult media(const char* ticket) {
                     productCount+=quantity;
                 }
             }
-            break;  // No necesitamos leer más secciones
+            break;
         }
     }
 
     fclose(file);
 
-    // Verificar si se encontraron productos
     if (productCount == 0) {
         fprintf(stderr, "Error: No se encontraron productos en '%s'.\n", filepath);
         return result;
     }
 
-    // Calcular la media
     double average = totalPrice / productCount;
 
-    // Construir el resultado
     result.result = average;
     asprintf(&result.output, "Media de precios de %s: %.2f\n", ticket, average);
 
@@ -310,14 +288,12 @@ BasicResult media(const char* ticket) {
 
 BasicResult precio(const char* product, const char* ticket) {
     BasicResult result;
-    result.result = -1.0;  // Valor inicial para identificar errores.
+    result.result = -1.0; 
     result.output = NULL;
 
-    // Construir la ruta del archivo CSV
     char filepath[MAX_LINE];
     snprintf(filepath, MAX_LINE, "ticketsData/%s.csv", ticket);
 
-    // Abrir el archivo CSV
     FILE* file = fopen(filepath, "r");
     if (file == NULL) {
         fprintf(stderr, "Error: No se pudo abrir el archivo '%s'.\n", filepath);
@@ -328,11 +304,10 @@ BasicResult precio(const char* product, const char* ticket) {
     double price = -1.0;
     int quantity = -1;
 
-    // Leer línea por línea el archivo CSV
     while (fgets(line, MAX_LINE, file)) {
-        // Buscar la sección de productos
+
         if (strncmp(line, "Producto;Cantidad;Precio", 24) == 0) {
-            // Procesar las líneas de productos
+
             while (fgets(line, MAX_LINE, file)) {
                 char* producto = strtok(line, ";");
                 char* cantidad = strtok(NULL, ";");
@@ -340,43 +315,38 @@ BasicResult precio(const char* product, const char* ticket) {
 
                 if (producto && precio && cantidad) {
                     if (strcmp(producto, product) == 0) {
-                        price = atof(precio);  // Obtener el precio
-                        quantity = atoi(cantidad);  // Obtener la cantidad
-                        break;  // Ya encontramos el producto, no necesitamos seguir buscando
+                        price = atof(precio);
+                        quantity = atoi(cantidad);
+                        break;
                     }
                 }
             }
-            break;  // Ya terminamos de buscar en la sección de productos
+            break;
         }
     }
 
     fclose(file);
 
-    // Verificar si se encontró el precio o la cantidad
     if (price == -1.0 || quantity == -1) {
-        fprintf(stderr, "Error: Producto '%s' no encontrado o datos incompletos en '%s'.\n", product, filepath);
+        fprintf(stderr, "Error: Producto %s no encontrado o datos incompletos en '%s'.\n", product, filepath);
         return result;
     }
 
-    // Calcular el precio por unidad (precio dividido por cantidad)
     result.result = price / quantity;
 
-    // Construir el mensaje de salida
-    asprintf(&result.output, "Precio de un producto: \"%s\" >> %.2f\n", product, result.result);
+    asprintf(&result.output, "Precio de un producto: %s >> %.2f\n", product, result.result);
 
     return result;
 }
 
 BasicResult totalproducto(const char* product, const char* ticket) {
     BasicResult result;
-    result.result = -1.0;  // Valor inicial para identificar errores.
+    result.result = -1.0; 
     result.output = NULL;
 
-    // Construir la ruta del archivo CSV
     char filepath[MAX_LINE];
     snprintf(filepath, MAX_LINE, "ticketsData/%s.csv", ticket);
 
-    // Abrir el archivo CSV
     FILE* file = fopen(filepath, "r");
     if (file == NULL) {
         fprintf(stderr, "Error: No se pudo abrir el archivo '%s'.\n", filepath);
@@ -386,11 +356,10 @@ BasicResult totalproducto(const char* product, const char* ticket) {
     char line[MAX_LINE];
     double price = -1.0;
 
-    // Leer línea por línea el archivo CSV
     while (fgets(line, MAX_LINE, file)) {
-        // Buscar la sección de productos
+
         if (strncmp(line, "Producto;Cantidad;Precio", 24) == 0) {
-            // Procesar las líneas de productos
+
             while (fgets(line, MAX_LINE, file)) {
                 char* producto = strtok(line, ";");
                 char* cantidad = strtok(NULL, ";");
@@ -399,38 +368,33 @@ BasicResult totalproducto(const char* product, const char* ticket) {
                 if (producto && precio) {
                     if (strcmp(producto, product) == 0) {
                         price = atof(precio);
-                        break;  // Ya encontramos el producto, no necesitamos seguir buscando
+                        break;
                     }
                 }
             }
-            break;  // Ya terminamos de buscar en la sección de productos
+            break; 
         }
     }
 
     fclose(file);
 
-    // Verificar si se encontró el precio
     if (price == -1.0) {
-        fprintf(stderr, "Error: Producto '%s' no encontrado en '%s'.\n", product, filepath);
+        fprintf(stderr, "Error: Producto %s no encontrado en '%s'.\n", product, filepath);
         return result;
     }
 
-    // Construir el resultado
     result.result = price;
-    asprintf(&result.output, "Precio de un producto: \"%s\" >> %.2f\n", product, price);
+    asprintf(&result.output, "Precio de un producto: %s >> %.2f\n", product, price);
 
     return result;
 }
 
 
-
-/*
 void fecha(const char* ticket) {
-    // Construir la ruta del archivo CSV
+
     char filepath[MAX_LINE];
     snprintf(filepath, MAX_LINE, "ticketsData/%s.csv", ticket);
 
-    // Abrir el archivo CSV
     FILE* file = fopen(filepath, "r");
     if (file == NULL) {
         fprintf(stderr, "Error: No se pudo abrir el archivo '%s'.\n", filepath);
@@ -439,38 +403,6 @@ void fecha(const char* ticket) {
 
     char line[MAX_LINE];
 
-    // Leer línea por línea el archivo CSV
-    while (fgets(line, MAX_LINE, file)) {
-        // Buscar la línea que contiene la fecha
-        // La fecha está en la segunda columna de la primera línea de datos
-        char* fecha = strtok(line, ",");  // El primer campo es "Supermercado"
-        fecha = strtok(NULL, ",");  // El segundo campo es "Fecha"
-
-        if (fecha) {
-            printf("Fecha de compra del ticket '%s': %s\n", ticket, fecha);
-            break;  // Ya encontramos la fecha, no necesitamos seguir leyendo
-        }
-    }
-
-    fclose(file);
-}
-*/
-
-void fecha(const char* ticket) {
-    // Construir la ruta del archivo CSV
-    char filepath[MAX_LINE];
-    snprintf(filepath, MAX_LINE, "ticketsData/%s.csv", ticket);
-
-    // Abrir el archivo CSV
-    FILE* file = fopen(filepath, "r");
-    if (file == NULL) {
-        fprintf(stderr, "Error: No se pudo abrir el archivo '%s'.\n", filepath);
-        return;
-    }
-
-    char line[MAX_LINE];
-
-    // Leer línea por línea el archivo CSV
     while (fgets(line, MAX_LINE, file)) {
     
         if (strncmp(line, "Supermercado;Fecha;Total", 24) == 0) {
@@ -491,11 +423,10 @@ void fecha(const char* ticket) {
 
 
 void supermercado(const char* ticket) {
-    // Construir la ruta del archivo CSV
+
     char filepath[MAX_LINE];
     snprintf(filepath, MAX_LINE, "ticketsData/%s.csv", ticket);
 
-    // Abrir el archivo CSV
     FILE* file = fopen(filepath, "r");
     if (file == NULL) {
         fprintf(stderr, "Error: No se pudo abrir el archivo '%s'.\n", filepath);
@@ -504,7 +435,6 @@ void supermercado(const char* ticket) {
 
     char line[MAX_LINE];
 
-    // Leer línea por línea el archivo CSV
     while (fgets(line, MAX_LINE, file)) {
     
         if (strncmp(line, "Supermercado;Fecha;Total", 24) == 0) {

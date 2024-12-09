@@ -172,10 +172,7 @@ char* replace_newlines(const char *str) {
 
 ticket:
     HEADER after_header {
-    	char *clean_header = replace_newlines($1);
-    	printf("\n%s\n", clean_header);
-    	
-        supermarket_CSV = clean_header;
+        supermarket_CSV = replace_newlines($1);
     }
     | /* vacio */{
         yyerror("Error: lo primero definido en un ticket debe ser la cabecera con el supermercado, calle y empresa.");

@@ -2,7 +2,7 @@ FUENTE = ticket
 FUENTE2 = query
 FUENTE3 = operations
 PRUEBA = ticketsRaw
-PRUEBA2 = querys/query2.txt
+PRUEBA2 = querys/query1.txt
 LIB = lfl -lm
 LIB2 = lfl
 
