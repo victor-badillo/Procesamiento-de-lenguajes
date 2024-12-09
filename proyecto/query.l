@@ -28,15 +28,15 @@ desdehasta (?i:desdehasta)
 totalproducto (?i:totalproducto)
 precio (?i:precio)
 verticket (?i:verticket)
-help(?i:help)
+ayuda (?i:ayuda)
 
 end ";;"
-quit (?i:quit)
+salir (?i:salir)
 
 
 %%
 {ws}		{ }
-{quit}		{ printf("QUIT\n"); return QUIT; }
+{salir}		{ printf("SALIR\n"); return SALIR; }
 {end}		{ printf("END\n"); return END; }
 {lbr}		{ printf("(\n"); return LBR; }
 {rbr}  		{ printf(")\n"); return RBR; }
@@ -52,7 +52,7 @@ quit (?i:quit)
 {desdehasta}	{ printf("DESDEHASTA\n"); return DESDE_HASTA; }
 {totalproducto}	{ printf("TOTALPRODUCTO\n");  return TOTAL_PRODUCTO; }
 {verticket}	{ printf("VERTICKET\n"); return VER_TICKET; }
-{help}		{ printf("HELP\n");  return HELP;}
+{ayuda}		{ printf("AYUDA\n");  return AYUDA;}
 {precio}	{ printf("PRECIO\n");  return PRECIO; }
 {fechaform}	{ yylval.str = strdup(yytext);  printf("fechaXXX\n"); return FECHA_FORM; }
 {ticket}	{ yylval.str = strdup(yytext);  printf("ticketXXX\n"); return TICKET; }

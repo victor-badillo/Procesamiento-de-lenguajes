@@ -55,6 +55,9 @@ void print_help() {
     printf("      - Devuelve los tickets que cumplen al menos una de las condiciones.\n");
     printf("      - Ejemplo: desdeHasta(\"01/12/2024\", \"05/12/2024\") OR total(ticket) < 20\n");
     
+    printf("  salir\n");
+    printf("      - Salir del generador de consultas sobre tickets de la compra.\n");
+    
     printf("\nNotas:\n");
     printf("  - Las operaciones con AND y OR devuelven los archivos .txt de los tickets que cumplen las condiciones.\n");
     printf("  - Para todas las operaciones se esperan nombres de tickets en el formato \"ticketX\", donde X es un número entero.\n");
@@ -468,13 +471,13 @@ int compare_desc(const void* a, const void* b) {
     return ((Product*)b)->price > ((Product*)a)->price;
 }
 
-// Función que lee un archivo CSV y ordena los productos por precio
+
 void ordenar(const char* order, const char* ticket) {
-    // Construir la ruta del archivo CSV
+
     char filepath[MAX_LINE];
     snprintf(filepath, MAX_LINE, "ticketsData/%s.csv", ticket);
 
-    // Abrir el archivo CSV
+
     FILE* file = fopen(filepath, "r");
     if (file == NULL) {
         fprintf(stderr, "Error: No se pudo abrir el archivo '%s'.\n", filepath);
@@ -485,38 +488,35 @@ void ordenar(const char* order, const char* ticket) {
     Product products[MAX_LINE];
     int productCount = 0;
 
-    // Leer línea por línea el archivo CSV
-    while (fgets(line, MAX_LINE, file)) {
-        // Buscar la sección de productos
-        if (strncmp(line, "Producto,Cantidad,Precio", 24) == 0) {
-            // Procesar las líneas de productos
-            while (fgets(line, MAX_LINE, file)) {
-                char* producto = strtok(line, ",");
-                char* cantidad = strtok(NULL, ",");
-                char* precio = strtok(NULL, ",");
 
+    while (fgets(line, MAX_LINE, file)) {
+
+        if (strncmp(line, "Producto;Cantidad;Precio", 24) == 0) {
+
+            while (fgets(line, MAX_LINE, file)) {
+                char* producto = strtok(line, ";");
+                char* cantidad = strtok(NULL, ";");
+                char* precio = strtok(NULL, ";");
+                
                 if (producto && precio) {
-                    // Guardar el producto y su precio
+                    //Guardar el producto y su precio
                     strncpy(products[productCount].product, producto, MAX_LINE);
                     products[productCount].price = atof(precio);
                     productCount++;
                 }
             }
-            break;  // Ya terminamos de leer los productos
+            break;  
         }
     }
 
     fclose(file);
 
-    // Seleccionar la función de comparación según el orden
+    //Seleccionar la función de comparación según el orden
     int (*compare_func)(const void*, const void*);
     if (strcasecmp(order, "mayor") == 0) {
-        compare_func = compare_desc;  // Orden descendente
+        compare_func = compare_desc;
     } else if (strcasecmp(order, "menor") == 0) {
-        compare_func = compare_asc;   // Orden ascendente
-    } else {
-        printf("Orden no válido. Usando el orden ascendente por defecto.\n");
-        compare_func = compare_asc;   // Predeterminado ascendente
+        compare_func = compare_asc;
     }
 
     // Ordenar los productos
@@ -525,14 +525,14 @@ void ordenar(const char* order, const char* ticket) {
     // Imprimir los productos ordenados
     printf("Productos ordenados por precio (%s):\n", order);
     for (int i = 0; i < productCount; i++) {
-        printf("%s %.2f\n", products[i].product, products[i].price);
+        printf("%s\t\t%.2f\n", products[i].product, products[i].price);
     }
 }
 
 
 void ver_ticket(const char* ticket) {
     char filepath[MAX_LINE];
-    snprintf(filepath, MAX_LINE, "ticketsRaw/%s.txt", ticket);  // Construir la ruta completa del archivo
+    snprintf(filepath, MAX_LINE, "ticketsRaw/%s.txt", ticket);
 
     FILE* file = fopen(filepath, "r");
     if (file == NULL) {
@@ -541,7 +541,7 @@ void ver_ticket(const char* ticket) {
     }
 
     char line[MAX_LINE];
-    // Leer e imprimir cada línea del archivo
+    
     while (fgets(line, MAX_LINE, file)) {
         printf("%s", line);
     }

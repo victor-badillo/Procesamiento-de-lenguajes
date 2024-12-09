@@ -33,7 +33,7 @@ void print_result(BasicResult basic){
     TicketList ticketList;
 }
 
-%token CARO BARATO TOTAL MEDIA PRECIO TOTAL_PRODUCTO FECHA SUPERMERCADO DESDE_HASTA VER_TICKET ORDENAR HELP QUIT
+%token CARO BARATO TOTAL MEDIA PRECIO TOTAL_PRODUCTO FECHA SUPERMERCADO DESDE_HASTA VER_TICKET ORDENAR AYUDA SALIR
 %token LBR RBR COMMA END
 %token <str> TICKET PRODUCT FECHA_FORM ORDEN
 
@@ -50,12 +50,12 @@ query:
     | desdeHasta END {
         print_desdeHasta($1);
     }
-    | HELP LBR RBR END { 
+    | AYUDA LBR RBR END { 
     	print_help();
     }
-    | QUIT END { exit_program = true; }
+    | SALIR END { exit_program = true; }
     | /* vacio */{
-    	yyerror("Error: Sintaxis operaciones basicas: op(arg1,...). Usar help() para más ayuda");
+    	yyerror("Error: Sintaxis operaciones basicas: op(arg1,...). Usar ayuda() para ver las consultas disponibles");
     }
 ;
 
@@ -107,7 +107,7 @@ desdeHasta:
 
 
 void yyerror(const char *error) {
-    fprintf(stderr, "Sintaxis de query incorrecta. %s\n", error);
+    fprintf(stderr, "Sintaxis de consulta incorrecta. %s\n", error);
 }
 
 
