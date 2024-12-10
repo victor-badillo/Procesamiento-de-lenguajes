@@ -1,0 +1,1 @@
+totalProducto("PULEVA OMEGA-3",ticket1);;
