@@ -554,72 +554,73 @@ void ver_ticket(const char* ticket) {
 struct tm parse_date(const char* date_str) {
     struct tm date = {0};
     
-    // Utilizamos sscanf para extraer la parte de la fecha y la hora
     sscanf(date_str, "%d/%d/%dT%d:%d", &date.tm_mday, &date.tm_mon, &date.tm_year, &date.tm_hour, &date.tm_min);
     
-    date.tm_year -= 1900;  // Ajustar el año
-    date.tm_mon -= 1;      // Ajustar el mes (0-11)
+    date.tm_year -= 1900;
+    date.tm_mon -= 1;
 
     return date;
 }
 
-// Función para comparar fechas y horas
+
 int compare_dates(struct tm date1, struct tm date2) {
     return difftime(mktime(&date1), mktime(&date2));
 }
 
-// Función que devuelve los tickets dentro del rango de fechas
+
 TicketList desdehasta(const char* fecha1, const char* fecha2) {
     TicketList result;
     result.tickets = malloc(0);
     result.count = 0;
 
-    // Convertir las fechas de entrada a struct tm
+
     struct tm start_date = parse_date(fecha1);
     struct tm end_date = parse_date(fecha2);
 
-    DIR* dir = opendir("ticketsData");  // Abrir el directorio de los tickets
+    DIR* dir = opendir("ticketsData"); 
     if (dir == NULL) {
         perror("No se pudo abrir el directorio ticketsData");
-        return result;  // Devolver lista vacía si no se puede abrir el directorio
+        return result;  
     }
 
     struct dirent* entry;
     while ((entry = readdir(dir)) != NULL) {
-        // Solo procesar archivos CSV que empiecen con "ticket" (por ejemplo, ticket1.csv, ticket2.csv, etc.)
+
         if (strncmp(entry->d_name, "ticket", 6) == 0 && strstr(entry->d_name, ".csv")) {
             char filepath[MAX_LINE];
             snprintf(filepath, MAX_LINE, "ticketsData/%s", entry->d_name);
 
             FILE* file = fopen(filepath, "r");
             if (!file) {
-                continue;  // Si no se puede abrir el archivo, seguimos con el siguiente
+                continue;
             }
 
             char line[MAX_LINE];
 
-            // Leer las líneas del archivo CSV
+
             while (fgets(line, MAX_LINE, file)) {
-                if (strncmp(line, "Supermercado,Fecha,Total", 24) == 0) {
-                    // Obtener la fecha y hora del ticket (segunda columna)
-                    char* fecha = strtok(line, ",");
-                    fecha = strtok(NULL, ",");  // Obtener la fecha con hora
+                if (strncmp(line, "Supermercado;Fecha;Total", 24) == 0) {
+                    while (fgets(line, MAX_LINE, file)) {
 
-                    if (fecha) {
-                        struct tm ticket_tm = parse_date(fecha);
+		            char* fecha = strtok(line, ";");
+		            fecha = strtok(NULL, ";"); 
+		            
+		            printf("%s",fecha);
 
-                        // Verificar si la fecha está dentro del rango
-                        if (compare_dates(start_date, ticket_tm) <= 0 && compare_dates(ticket_tm, end_date) <= 0) {
-                            // Extraer solo el nombre del ticket (sin la ruta)
-                            char* ticket_name = strtok(entry->d_name, ".");  // Eliminar la extensión .csv
+		            if (fecha) {
+		                struct tm ticket_tm = parse_date(fecha);
 
-                            // Añadir el ticket a la lista
-                            result.tickets = realloc(result.tickets, (result.count + 1) * sizeof(char*));
-                            result.tickets[result.count] = strdup(ticket_name);  // Guardamos solo el nombre del archivo
-                            result.count++;
-                        }
+		                if (compare_dates(start_date, ticket_tm) <= 0 && compare_dates(ticket_tm, end_date) <= 0) {
+		                    char* ticket_name = strtok(entry->d_name, ".");
+
+		                    // Añadir el ticket a la lista
+		                    result.tickets = realloc(result.tickets, (result.count + 1) * sizeof(char*));
+		                    result.tickets[result.count] = strdup(ticket_name); 
+		                    result.count++;
+		                }
+		            }
+		            break; 
                     }
-                    break;  // Ya encontramos la fecha, no necesitamos seguir leyendo
                 }
             }
 
@@ -627,7 +628,7 @@ TicketList desdehasta(const char* fecha1, const char* fecha2) {
         }
     }
 
-    closedir(dir);  // Cerrar el directorio
+    closedir(dir); 
     return result;
 }
 
@@ -637,16 +638,13 @@ void print_desdeHasta(TicketList result) {
         return;
     }
 
-    // Imprimir los tickets separados por comas
     for (size_t i = 0; i < result.count; ++i) {
         printf("%s", result.tickets[i]);
 
-        // Si no es el último ticket, imprime una coma
         if (i < result.count - 1) {
             printf(", ");
         }
     }
 
-    // Nueva línea al final
     printf("\n");
 }
