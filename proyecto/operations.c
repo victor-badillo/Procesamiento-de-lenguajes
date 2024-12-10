@@ -387,7 +387,7 @@ BasicResult totalproducto(const char* product, const char* ticket) {
     }
 
     result.result = price;
-    asprintf(&result.output, "Precio de un producto: %s >> %.2f\n", product, price);
+    asprintf(&result.output, "Precio total de un producto: %s >> %.2f\n", product, price);
 
     return result;
 }
@@ -414,7 +414,7 @@ void fecha(const char* ticket) {
 		char* fecha = strtok(NULL, ";");
 		        
 		if (fecha) {
-		    printf("Fecha de compra del ticket '%s': %s\n", ticket, fecha);
+		    printf("Fecha de compra de '%s': %s\n", ticket, fecha);
 		    break; 
 		}
             }   
@@ -604,8 +604,6 @@ TicketList desdehasta(const char* fecha1, const char* fecha2) {
 
 		            char* fecha = strtok(line, ";");
 		            fecha = strtok(NULL, ";"); 
-		            
-		            printf("%s",fecha);
 
 		            if (fecha) {
 		                struct tm ticket_tm = parse_date(fecha);
@@ -637,6 +635,8 @@ void print_desdeHasta(TicketList result) {
         printf("No se encontraron tickets en el rango de fechas especificado.\n");
         return;
     }
+    
+    printf("Ticket encontrados entre las fechas indicadas:\n");
 
     for (size_t i = 0; i < result.count; ++i) {
         printf("%s", result.tickets[i]);
