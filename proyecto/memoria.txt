@@ -7,3 +7,148 @@ Considetaciones:
 
 Al encontrar un error en el análisis de los tickets para automaticamente
 Si en algun momento hay un error de sintaxis, el archivo csv generado se elimina
+
+Errores ticket
+
+ticket1.txt
+
+Sintaxis de ticket incorrecta. Error: lo primero definido en un ticket debe ser la cabecera con el supermercado, calle y empresa.
+
+ticket2.txt
+
+Carácter desconocido: :, en la línea 4
+Sintaxis de ticket incorrecta. Error en línea 4: debe haber una separacion (-) entre la empresa y fecha/hora/tlf.
+
+ticket3.txt
+
+Sintaxis de ticket incorrecta. Error en línea 22: El nummero de telefono debe tener 9 digitos.
+
+ticket4.txt
+
+Sintaxis de ticket incorrecta. Error en línea 22: La fecha y hora proporcionadas no pueden ser posteriores a la fecha y hora actual.
+
+ticket5.txt
+
+Sintaxis de ticket incorrecta. Error: No son válidos precios negativos [-1.82] para los productos
+
+ticket6.txt
+
+Sintaxis de ticket incorrecta. Error: precio total de compra [15.00] no es igual a la suma de precios de los productos de la compra [9.38]
+
+ticket7.txt
+
+Sintaxis de ticket incorrecta. Error: La suma de base + IVA (2.42) no coincide con el total proporcionado 1.82
+
+ticket8.txt
+
+Sintaxis de ticket incorrecta. Error: La suma de base + IVA (1.82) no coincide con el total proporcionado 2.00
+
+ticket9.txt
+
+Sintaxis de ticket incorrecta. Error: Falta la linea de agradecimiento y despedida
+
+
+
+QUERYS
+
+
+query1.txt
+
+Producto más caro: "PULEVA OMEGA-3" >> 3.18
+
+query2.txt
+
+Producto más barato: "CERVEZA 1906 RESER" >> 1.82
+
+query3.txt
+
+Precio total de ticket1: 9.38
+
+query4.txt
+
+Media de precios de ticket1: 1.56
+
+query5.txt
+
+Fecha de compra de 'ticket1': 16/11/2024T18:29
+
+query6.txt
+
+Supermercado de compra de 'ticket1': 
+"**     GADIS O BURGO      **|      AV. JUAN CARLOS I|     MERCARTABRIA,S.L.U.|"
+
+query7.txt
+
+Precio total de un producto: "PULEVA OMEGA-3" >> 3.18
+
+query8.txt
+
+Precio de un producto: "PULEVA OMEGA-3" >> 1.59
+
+query9.txt
+
+Productos ordenados por precio (mayor):
+"PULEVA OMEGA-3"                3.18
+"HARINA/MAIZ PAN 1KG"           2.40
+"FONTER C/G. 1L"                1.98
+"CERVEZA 1906 RESER"            1.82
+
+query10.txt
+
+Ticket encontrados entre las fechas indicadas:
+ticket5, ticket2
+
+query11.txt
+
+  **     GADIS O BURGO      **
+      AV. JUAN CARLOS I
+     MERCARTABRIA,S.L.U.
+--------------------------------
+16/11/2024  18:29  Tlf:981654595
+--------------------------------
+CERVEZA 1906 RESER          1.82
+FONTER C/G. 1L              0.99
+FONTER C/G. 1L              0.99
+PULEVA OMEGA-3              1.59
+PULEVA OMEGA-3              1.59
+HARINA/MAIZ PAN 1KG         2.40
+--------------------------------
+TOTAL......:      9.38
+--------------------------------
+     BASE    IVA  CUOTA    TOTAL 
+ ========  ===== ====== ========
+     1.50  21.00   0.32     1.82
+     4.69  10.00   0.47     5.16
+     2.35   2.00   0.05     2.40
+--------------------------------
+  *  GRACIAS POR SU VISITA  *
+
+query12.txt
+
+(Información con los comandos disponibles)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
