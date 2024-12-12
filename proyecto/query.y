@@ -212,6 +212,9 @@ int main(int argc, char *argv[]) {
 	    if (yyparse() != 0){
 	       yyin = NULL;
 	    }
+	    
+	    fclose(input_stream);
+	    input_stream = NULL;
 			
 	    if (exit_program) {
                 printf("Cerrando generador de consultas sobre tickets de la compra...\n");
@@ -220,11 +223,11 @@ int main(int argc, char *argv[]) {
 		}
 		free(params);
 		func_ptr = NULL;
+		
             	break;
             }
         		
-	    fclose(input_stream);
-	    input_stream = NULL;
+	    
 	 }
 	 break;
 		
