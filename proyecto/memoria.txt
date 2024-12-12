@@ -1,6 +1,183 @@
-Proyecto, Analizador y generador de consultas sobre tickets de la compra
+Proyecto, Analizador y Generador de Consultas sobre tickets de la compra
 
 Víctor Nathanael Badillo Aldama
+
+
+
+1.- Introducción
+
+Este proyecto consiste en el desarrollo de un analizador y generador de consultas sobre tickets de la compra. Para
+llevarlo a cabo este proyecto se puede subdividir en 2 fases o partes. La primera consiste en crear un analizador 
+léxico y sintáctico para revisar y verificar que los tickets de entrada están correctamente escritos. Este primer
+análisis genera un archivo csv para cada ticket analizado en el que se guarda la información de interés sobre
+dicho ticket.
+
+Estos archivos se utilizan en la segunda fase, en la que se puede hacer consultas sobre tickets de la compra.
+La información a mostrar proviene de los archivos csv. El resultado de cada consulta se muestra por pantalla.
+Las consultas disponibles son las siguientes:
+
+caro(ticketX) -> [producto más caro]
+barato(ticketX) -> [producto más barato]
+total(ticketX) -> [precio total de un ticket]
+media(ticketX) -> [media de precio]
+precio("PRODUCTO", ticketX) -> [precio de un producto en un ticket]
+totalProducto("PRODUCTO", ticketX) -> [precio total de un producto de un ticket]
+fecha(ticketX) -> [fecha de compra de un ticket]
+supermercado(ticketX) -> [supermercado en el que se realizó la compra]
+ordenar(mayor/menor, ticketX) -> imprime por pantalla los productos ordenados por precio
+verticket(ticketX) -> imprime por pantalla el ticket [imprime el ticketX.txt] y no se puede combinar con nada.
+desdehasta(dd/mm/yyyyThh:mm, dd/mm/yyyyThh:mm,) -> imrpime los nombres de los tickets con fecha de compra entre
+						   las fechas introducidas
+ayuda -> [imprime información de ayuda]
+salir -> salir del programa
+
+En todo momento para los dos analizadores muestran y detallan el error que puedan encontrar durante el análisis.
+
+
+
+2.- Estructura del proyecto
+
+Para la compilación y ejecución de proporciona un script Makefile. Se proporcionan comando de compilacion,
+ejecución y borrado de cada uno de los análisis. ticket y query, t1 y q1, clean y clean2 respectivamente para
+cada analizador.
+
+Para cambiar las entradas de los archivos basta con cambiar las variables PRUEBA para el análisis de tickets y
+PRUEBA2 para el análisis de consultas.
+
+
+En el directorio del proyecto hay varios subdirectorios que se explican a continuación:
+
+/querys
+Contiene archivos queryX.txt con ejemplos de consultas válidas.
+
+/querysError
+Contiene archivos queryX.txt con ejemplos de consultas no válidas que muestran un error.
+
+/ticketsData
+Contiene archivos ticketX.csv con la información generada y guardada de cada ticket correspondiente.
+
+/ticketsError
+Contiene archivos ticketX.txt con ejemplos de tickets mal escritos.
+
+/ticketsRaw
+Contiene archivos ticketX.txt con ejemplos de tickets bien escritos que generan un archivo csv al analizarse.
+
+
+Los archivos encargados de realizar en el análisis son:
+
+Para tickets -> ticket.l y ticket.y
+
+Para consultas -> query.l, query.y, operations.c y operations.h
+
+
+3.- Analizador de tickets
+
+Este analizador se encarga de revisar que los tickets este correctamente escritos y genera archivos csv de dicho
+ticket, es decir, para ticket1.txt se genera el archivo ticket1.csv.
+
+Antes de explicar en detalle el funcionamiento de este analizador se muestra un ejemplo de un ticket correctamente
+escrito.
+
+
+  **     GADIS O BURGO      **
+      AV. JUAN CARLOS I
+     MERCARTABRIA,S.L.U.
+--------------------------------
+16/11/2024  18:29  Tlf:981654595
+--------------------------------
+CERVEZA 1906 RESER          1.82
+FONTER C/G. 1L              0.99
+FONTER C/G. 1L              0.99
+PULEVA OMEGA-3              1.59
+PULEVA OMEGA-3              1.59
+HARINA/MAIZ PAN 1KG         2.40
+--------------------------------
+TOTAL......:      9.38
+--------------------------------
+     BASE    IVA  CUOTA    TOTAL 
+ ========  ===== ====== ========
+     1.50  21.00   0.32     1.82
+     4.69  10.00   0.47     5.16
+     2.35   2.00   0.05     2.40
+--------------------------------
+  *  GRACIAS POR SU VISITA  *
+
+
+
+3.1 ticket.l
+
+Este documento se encarga de leer el archivo de entrada del ticket y generar los tokens necesarios para el
+análisis sintáctico. Los tokens capturados son y se centran en:
+
+HEADER => primera parte del ticket que tiene el nombre del supermercado, la calle y la empresa
+PURCHASEDATE => fecha de compra con la hora
+PHONE_NUMBER => telefono de contacto
+SEPARATE => linea de separación (---) entre partes del ticket
+SEPARATE2 => linea de separación (==) entre partes del ticket
+TOTALPURCHASE => línea con el precio total entre lista de productos e impuestos
+BASE, IVA, COUTA, TOTAL => nombres de las columnas en la parte de impuestos
+PRICE, NEGATIVE_PRICE => precios de los productos y precios negativos respectivamente
+GOODBYE => línea de despedida después de los impuestos
+
+
+Los tokens HEADER, PURCHASEDATE, PHONE_NUMBER, TOTALPURCHASE, PRICE, NEGATIVE_PRICE Y PRODUCT guardan su valor
+como una cadena de caracteres. Esto con el objetivo de analizar que estén correctamente escritos y guardar su
+información en el archivo de salida csv en análisis sintáctico.
+
+En el caso de que haya elementos no reconocidos se imprime un mensaje por pantalla.
+
+
+
+3.2 ticket.y
+
+Este documento se encarga de ver que los tokens obtenidos con el ticket.l esten correctamente colocados y
+formados. Para utlizar este archivo hay 2 formas en concreto. Si en el archivo Makefile para la variable PRUEBA
+se usa ticketsRaw, entonces el analizador usa bucle para analizar cada uno de los archivos en este directorio.
+La otra posibilidad de ejecución es usando como valor para PRUEBA un solo archivo, ejemplo: 
+PRUEBA = ticketsRaw/ticket1.txt
+
+En ambos casos se muestra un mensaje corto y sencillo de que el ticket está bien escrito.
+
+
+
+
+
+
+
+3.3 Consideraciones
+
+- Los archivos csv tiene la siguiente estructura:
+
+Supermercado;Fecha;Total
+"**     GADIS O BURGO      **|      AV. JUAN CARLOS I|     MERCARTABRIA,S.L.U.|";16/11/2024T18:29;9.38
+Producto;Cantidad;Precio
+"CERVEZA 1906 RESER";1;1.82
+
+- Se ha decidido utilizar ; en vez de , para los archivos csv para facilitar la busqueda de información en este
+archivo.
+- La cabecera del ticket se guarda como una sola línea por simplicidad sustituyendo los saltos de linea por '|'.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+En todo momento 
 
 
 Considetaciones:
@@ -129,10 +306,66 @@ query12.txt
 
 
 
+Errores querys:
+
+query1.txt
+
+Sintaxis de consulta incorrecta. Error: Todas las consultas deben acabar en ;;
+
+query2.txt
+
+Sintaxis de consulta incorrecta. Error: Sintaxis operaciones basicas: op(arg1,...). Usar ayuda para ver las consultas disponibles
+
+query3.txt
+
+Sintaxis de consulta incorrecta. Error: Falta el paréntesis de apertura ( para los parámetros
+
+query4.txt
+
+Sintaxis de consulta incorrecta. Error: Falta el paréntesis de cierre ) para los parámetros
+
+query5.txt
+
+Sintaxis de consulta incorrecta. Error: Falta los paréntesis () para los parámetros
+
+query6.txt
+
+Sintaxis de consulta incorrecta. Error: Tipo de parámetro incorrecto, solo válido (ticketX)
+
+query7.txt
+
+Sintaxis de consulta incorrecta. Error: Falta la coma de separación entre los parámetros
+
+query8.txt
+
+Sintaxis de consulta incorrecta. Error: Falta el segundo parámetro (ticketX)
+
+query9.txt
+
+Sintaxis de consulta incorrecta. Error: Faltan parámetros. Usar ayuda para más información.
+
+query10.txt
+
+Sintaxis de consulta incorrecta. Error: Tipo de parámetro incorrecto, solo válido (dd/mm/yyyyThh:mm,dd/mm/yyyyThh:mm)
 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+Consideraciones:
+
+- Al encontrar un error sintáctico sale del programa.
 
 
 
