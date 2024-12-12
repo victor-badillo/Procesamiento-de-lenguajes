@@ -55,7 +55,7 @@ void print_help() {
 
 void caro(char **params) {
 
-    char * ticket = params[0];
+    char * ticket = strdup(params[0]);
 
     char filepath[MAX_LINE];
     snprintf(filepath, MAX_LINE, "ticketsData/%s.csv", ticket);
@@ -106,6 +106,7 @@ void caro(char **params) {
 
     printf("Producto más caro: %s >> %.2f\n", maxProduct, maxPrice);
     free(maxProduct);
+    free(ticket);
 
 }
 
@@ -113,7 +114,7 @@ void caro(char **params) {
 
 void barato(char **params) {
 
-    char *ticket = params[0];
+    char *ticket = strdup(params[0]);
 
     char filepath[MAX_LINE];
     snprintf(filepath, MAX_LINE, "ticketsData/%s.csv", ticket);
@@ -164,6 +165,7 @@ void barato(char **params) {
     printf("Producto más barato: %s >> %.2f\n", minProduct, minPrice);
 
     free(minProduct);
+    free(ticket);
 
 }
 
@@ -172,7 +174,7 @@ void barato(char **params) {
 
 void total(char **params) {
 
-    char *ticket = params[0];
+    char *ticket = strdup(params[0]);
 
     char filepath[MAX_LINE];
     snprintf(filepath, MAX_LINE, "ticketsData/%s.csv", ticket);
@@ -214,6 +216,7 @@ void total(char **params) {
     }
 
     printf("Precio total de %s: %.2f\n", ticket, totalPrice);
+    free(ticket);
 
 }
 
@@ -221,7 +224,7 @@ void total(char **params) {
 
 void media(char **params) {
 
-    char * ticket = params[0];
+    char * ticket = strdup(params[0]);
 
     char filepath[MAX_LINE];
     snprintf(filepath, MAX_LINE, "ticketsData/%s.csv", ticket);
@@ -266,14 +269,15 @@ void media(char **params) {
     double average = totalPrice / productCount;
     
     printf("Media de precios de %s: %.2f\n", ticket, average);
+    free(ticket);
 
 }
 
 
 void precio(char **params) {
     
-    char *product = params[0];
-    char *ticket = params[1];
+    char *product = strdup(params[0]);
+    char *ticket = strdup(params[1]);
 
     char filepath[MAX_LINE];
     snprintf(filepath, MAX_LINE, "ticketsData/%s.csv", ticket);
@@ -319,13 +323,15 @@ void precio(char **params) {
     double result = price / quantity;
 
     printf("Precio de un producto: %s >> %.2f\n", product, result);
+    free(ticket);
+    free(product);
 
 }
 
 void totalproducto(char **params) {
     
-    char *product = params[0];
-    char *ticket = params[1];
+    char *product = strdup(params[0]);
+    char *ticket = strdup(params[1]);
 
     char filepath[MAX_LINE];
     snprintf(filepath, MAX_LINE, "ticketsData/%s.csv", ticket);
@@ -367,13 +373,16 @@ void totalproducto(char **params) {
     }
 
     printf("Precio total de un producto: %s >> %.2f\n", product, price);
+    free(product);
+    free(ticket);
+    
 
 }
 
 
 void fecha(char **params) {
     
-    char *ticket = params[0];
+    char *ticket = strdup(params[0]);
 
     char filepath[MAX_LINE];
     snprintf(filepath, MAX_LINE, "ticketsData/%s.csv", ticket);
@@ -402,12 +411,13 @@ void fecha(char **params) {
         break;   
     }
     fclose(file);
+    free(ticket);
 }
 
 
 void supermercado(char **params) {
 
-    char *ticket = params[0];
+    char *ticket = strdup(params[0]);
 
     char filepath[MAX_LINE];
     snprintf(filepath, MAX_LINE, "ticketsData/%s.csv", ticket);
@@ -436,6 +446,7 @@ void supermercado(char **params) {
     }
 
     fclose(file);
+    free(ticket);
 }
 
 typedef struct {
@@ -456,8 +467,8 @@ int compare_desc(const void* a, const void* b) {
 
 void ordenar(char **params) {
 
-    char *order = params[0];
-    char *ticket = params[1];
+    char *order = strdup(params[0]);
+    char *ticket = strdup(params[1]);
 
     char filepath[MAX_LINE];
     snprintf(filepath, MAX_LINE, "ticketsData/%s.csv", ticket);
@@ -512,12 +523,15 @@ void ordenar(char **params) {
     for (int i = 0; i < productCount; i++) {
         printf("%s\t\t%.2f\n", products[i].product, products[i].price);
     }
+    
+    free(order);
+    free(ticket);
 }
 
 
 void ver_ticket(char **params) {
 
-    char *ticket = params[0];
+    char *ticket = strdup(params[0]);
     
     char filepath[MAX_LINE];
     snprintf(filepath, MAX_LINE, "ticketsRaw/%s.txt", ticket);
@@ -535,6 +549,7 @@ void ver_ticket(char **params) {
     }
 
     fclose(file);
+    free(ticket);
 }
 
 
@@ -558,8 +573,8 @@ int compare_dates(struct tm date1, struct tm date2) {
 
 void desdehasta(char **params) {
 
-    char *fecha1 = params[0];
-    char *fecha2 = params[1];
+    char *fecha1 = strdup(params[0]);
+    char *fecha2 = strdup(params[1]);
     
     char **tickets = NULL;
     size_t count = 0;
@@ -635,6 +650,8 @@ void desdehasta(char **params) {
     }
 
     free(tickets);
+    free(fecha1);
+    free(fecha2);
 
     printf("\n");
 

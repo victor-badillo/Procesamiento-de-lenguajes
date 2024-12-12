@@ -17,6 +17,18 @@ bool exit_program = false;
 void (*func_ptr)(char **params);
 char **params = NULL;
 
+void free_params(char **params) {
+    if (params) {
+        for (int i = 0; params[i] != NULL; i++) {
+            free(params[i]);
+            params[i] = NULL;
+        }
+        free(params);
+        params = NULL;  // Evitar accesos inválidos
+    }
+    func_ptr = NULL;
+}
+
 %}
 
 %union {
@@ -75,7 +87,6 @@ args1:
 
 params1:
     TICKET { 
-    	params = malloc(1 * sizeof(char*));
         params[0] = strdup($1); 
     }
     | /* vacio */ { yyerror("Error: Tipo de parámetro incorrecto, solo válido (ticketX)"); YYABORT; }
@@ -91,7 +102,6 @@ args2:
 
 params2:
     PRODUCT COMMA TICKET { 
-    	params = malloc(2 * sizeof(char*));
         params[0] = strdup($1); 
         params[1] = strdup($3); 
     }
@@ -116,7 +126,6 @@ args3:
 
 params3:
     ORDER COMMA TICKET { 
-    	params = malloc(2 * sizeof(char*));
         params[0] = strdup($1); 
         params[1] = strdup($3); 
     }
@@ -140,7 +149,6 @@ args4:
 
 params4:
     FECHA_FORM COMMA FECHA_FORM { 
-    	params = malloc(2 * sizeof(char*));
         params[0] = strdup($1); 
         params[1] = strdup($3); 
     }
@@ -180,21 +188,14 @@ bool is_only_whitespace(const char *str) {
     return true;  // Todos los caracteres son espacios, tabulaciones o saltos de línea
 }
 
-void free_params(char **params) {
-    if (params) {
-        for (int i = 0; params[i] != NULL; i++) {
-            free(params[i]);
-        }
-        free(params);
-    }
-    func_ptr = NULL;
-}
+
 
 
 int main(int argc, char *argv[]) {
    extern FILE *yyin;
    char input[MAX_INPUT_SIZE];
    FILE *input_stream;
+   params = malloc(2 * sizeof(char*)); 
    printf("Consultas sobre tickets de la compra...\n");
     
    switch (argc) {
