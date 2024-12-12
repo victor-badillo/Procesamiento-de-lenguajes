@@ -4,7 +4,6 @@
 #include "operations.h"
 #include "query.tab.h"
 %}
-%option yylineno
 
 
 ws [ \t]+
@@ -43,7 +42,7 @@ salir (?i:salir)
 {comma}		{ printf(",\n"); return COMMA; }
 {caro}		{ printf("CARO\n"); return CARO; }
 {barato}  	{ printf("BARATO\n"); return BARATO; }
-{orden}		{ yylval.str = strdup(yytext); printf("mayor/menor\n"); return ORDEN; }
+{orden}		{ yylval.str = strdup(yytext); printf("mayor/menor\n"); return ORDER; }
 {ordenar}  	{ printf("ORDENAR\n"); return ORDENAR; }
 {total}		{ printf("TOTAL\n"); return TOTAL;  }
 {media}		{ printf("MEDIA\n"); return MEDIA; }

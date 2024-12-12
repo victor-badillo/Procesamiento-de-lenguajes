@@ -28,7 +28,6 @@ void print_help() {
     printf("  totalProducto(producto, ticketX) -> double\n");
     printf("      - Devuelve el precio total de un producto en un ticket (cantidad * precio).\n");
     
-    printf("\nOperaciones de impresión por pantalla(no combinables):\n");
     printf("  fecha(ticketX) -> void\n");
     printf("      - Imprime la fecha de compra de un ticket.\n");
     
@@ -40,44 +39,28 @@ void print_help() {
     printf("  verTicket(ticketX) -> void\n");
     printf("      - Imprime por pantalla el contenido del ticket en formato de archivo .txt.\n");
     
-    printf("\nOperación combinable:\n");
-    printf("  desdeHasta(fecha1, fecha2) -> void\n");
-    printf("      - Devuelve los tickets (archivos .txt) que están en el rango de fechas especificado.\n");
-    printf("      - Verifica las fechas en los archivos .csv.\n");
-    printf("      - Puede combinarse con operaciones básicas usando AND y OR.\n");
-    
-    printf("\nCombinaciones válidas de desdeHasta con operaciones básicas:\n");
-    printf("  desdeHasta(\"fecha1\", \"fecha2\") AND operacion_basica\n");
-    printf("      - Devuelve los tickets que cumplen ambas condiciones.\n");
-    printf("      - Ejemplo: desdeHasta(\"01/12/2024\", \"05/12/2024\") AND total(ticket) > 50\n");
-    
-    printf("  desdeHasta(\"fecha1\", \"fecha2\") OR operacion_basica\n");
-    printf("      - Devuelve los tickets que cumplen al menos una de las condiciones.\n");
-    printf("      - Ejemplo: desdeHasta(\"01/12/2024\", \"05/12/2024\") OR total(ticket) < 20\n");
-    
     printf("  salir\n");
     printf("      - Salir del generador de consultas sobre tickets de la compra.\n");
     
     printf("\nNotas:\n");
-    printf("  - Las operaciones con AND y OR devuelven los archivos .txt de los tickets que cumplen las condiciones.\n");
     printf("  - Para todas las operaciones se esperan nombres de tickets en el formato \"ticketX\", donde X es un número entero.\n");
     printf("  - Los nombres de productos van entre comillas dobles y en mayusculas.\n");
     printf("  - El formato de fechas es dd/mm/yyyyThh:mm.\n");
     printf("-------------------------------------------------------------------------------------\n");
 }
 
-BasicResult caro(const char* ticket) {
-    BasicResult result;
-    result.result = -1.0;
-    result.output = NULL;
+
+void caro(char **params) {
+
+    char * ticket = params[0];
 
     char filepath[MAX_LINE];
     snprintf(filepath, MAX_LINE, "ticketsData/%s.csv", ticket);
 
     FILE* file = fopen(filepath, "r");
     if (file == NULL) {
-        fprintf(stderr, "Error: No se pudo abrir el archivo '%s'.\n", filepath);
-        return result;
+        printf("Error: No se pudo abrir el archivo '%s'.\n", filepath);
+        return;
     }
 
     char line[MAX_LINE];
@@ -114,30 +97,28 @@ BasicResult caro(const char* ticket) {
     fclose(file);
 
     if (maxPrice == -1.0 || maxProduct == NULL) {
-        fprintf(stderr, "Error: No se encontraron productos en '%s'.\n", filepath);
-        return result;
+        printf("Error: No se encontraron productos en '%s'.\n", filepath);
+        return;
     }
 
-    result.result = maxPrice;
-    asprintf(&result.output, "Producto más caro: %s >> %.2f\n", maxProduct, maxPrice);
-
+    printf("Producto más caro: %s >> %.2f\n", maxProduct, maxPrice);
     free(maxProduct);
 
-    return result;
 }
 
-BasicResult barato(const char* ticket) {
-    BasicResult result;
-    result.result = -1.0;
-    result.output = NULL;
+
+
+void barato(char **params) {
+
+    char *ticket = params[0];
 
     char filepath[MAX_LINE];
     snprintf(filepath, MAX_LINE, "ticketsData/%s.csv", ticket);
 
     FILE* file = fopen(filepath, "r");
     if (file == NULL) {
-        fprintf(stderr, "Error: No se pudo abrir el archivo '%s'.\n", filepath);
-        return result;
+        printf("Error: No se pudo abrir el archivo '%s'.\n", filepath);
+        return;
     }
 
     char line[MAX_LINE];
@@ -173,30 +154,30 @@ BasicResult barato(const char* ticket) {
     fclose(file);
 
     if (minPrice == -1.0 || minProduct == NULL) {
-        fprintf(stderr, "Error: No se encontraron productos en '%s'.\n", filepath);
-        return result;
+        printf("Error: No se encontraron productos en '%s'.\n", filepath);
+        return;
     }
 
-    result.result = minPrice;
-    asprintf(&result.output, "Producto más barato: %s >> %.2f\n", minProduct, minPrice);
+    printf("Producto más barato: %s >> %.2f\n", minProduct, minPrice);
 
     free(minProduct);
 
-    return result;
 }
 
-BasicResult total(const char* ticket) {
-    BasicResult result;
-    result.result = -1.0; 
-    result.output = NULL;
+
+
+
+void total(char **params) {
+
+    char *ticket = params[0];
 
     char filepath[MAX_LINE];
     snprintf(filepath, MAX_LINE, "ticketsData/%s.csv", ticket);
 
     FILE* file = fopen(filepath, "r");
     if (file == NULL) {
-        fprintf(stderr, "Error: No se pudo abrir el archivo '%s'.\n", filepath);
-        return result;
+        printf("Error: No se pudo abrir el archivo '%s'.\n", filepath);
+        return;
     }
 
     char line[MAX_LINE];
@@ -225,28 +206,27 @@ BasicResult total(const char* ticket) {
 
 
     if (totalPrice == -1.0) {
-        fprintf(stderr, "Error: No se encontró el precio total en '%s'.\n", filepath);
-        return result;
+        printf("Error: No se encontró el precio total en '%s'.\n", filepath);
+        return;
     }
 
-    result.result = totalPrice;
-    asprintf(&result.output, "Precio total de %s: %.2f\n", ticket, totalPrice);
+    printf("Precio total de %s: %.2f\n", ticket, totalPrice);
 
-    return result;
 }
 
-BasicResult media(const char* ticket) {
-    BasicResult result;
-    result.result = -1.0;
-    result.output = NULL;
+
+
+void media(char **params) {
+
+    char * ticket = params[0];
 
     char filepath[MAX_LINE];
     snprintf(filepath, MAX_LINE, "ticketsData/%s.csv", ticket);
 
     FILE* file = fopen(filepath, "r");
     if (file == NULL) {
-        fprintf(stderr, "Error: No se pudo abrir el archivo '%s'.\n", filepath);
-        return result;
+        printf("Error: No se pudo abrir el archivo '%s'.\n", filepath);
+        return;
     }
 
     char line[MAX_LINE];
@@ -276,31 +256,29 @@ BasicResult media(const char* ticket) {
     fclose(file);
 
     if (productCount == 0) {
-        fprintf(stderr, "Error: No se encontraron productos en '%s'.\n", filepath);
-        return result;
+        printf("Error: No se encontraron productos en '%s'.\n", filepath);
+        return;
     }
 
     double average = totalPrice / productCount;
+    
+    printf("Media de precios de %s: %.2f\n", ticket, average);
 
-    result.result = average;
-    asprintf(&result.output, "Media de precios de %s: %.2f\n", ticket, average);
-
-    return result;
 }
 
 
-BasicResult precio(const char* product, const char* ticket) {
-    BasicResult result;
-    result.result = -1.0; 
-    result.output = NULL;
+void precio(char **params) {
+    
+    char *product = params[0];
+    char *ticket = params[1];
 
     char filepath[MAX_LINE];
     snprintf(filepath, MAX_LINE, "ticketsData/%s.csv", ticket);
 
     FILE* file = fopen(filepath, "r");
     if (file == NULL) {
-        fprintf(stderr, "Error: No se pudo abrir el archivo '%s'.\n", filepath);
-        return result;
+        printf("Error: No se pudo abrir el archivo '%s'.\n", filepath);
+        return;
     }
 
     char line[MAX_LINE];
@@ -331,29 +309,28 @@ BasicResult precio(const char* product, const char* ticket) {
     fclose(file);
 
     if (price == -1.0 || quantity == -1) {
-        fprintf(stderr, "Error: Producto %s no encontrado o datos incompletos en '%s'.\n", product, filepath);
-        return result;
+        printf("Error: Producto %s no encontrado o datos incompletos en '%s'.\n", product, filepath);
+        return;
     }
 
-    result.result = price / quantity;
+    double result = price / quantity;
 
-    asprintf(&result.output, "Precio de un producto: %s >> %.2f\n", product, result.result);
+    printf("Precio de un producto: %s >> %.2f\n", product, result);
 
-    return result;
 }
 
-BasicResult totalproducto(const char* product, const char* ticket) {
-    BasicResult result;
-    result.result = -1.0; 
-    result.output = NULL;
+void totalproducto(char **params) {
+    
+    char *product = params[0];
+    char *ticket = params[1];
 
     char filepath[MAX_LINE];
     snprintf(filepath, MAX_LINE, "ticketsData/%s.csv", ticket);
 
     FILE* file = fopen(filepath, "r");
     if (file == NULL) {
-        fprintf(stderr, "Error: No se pudo abrir el archivo '%s'.\n", filepath);
-        return result;
+        printf("Error: No se pudo abrir el archivo '%s'.\n", filepath);
+        return;
     }
 
     char line[MAX_LINE];
@@ -382,25 +359,25 @@ BasicResult totalproducto(const char* product, const char* ticket) {
     fclose(file);
 
     if (price == -1.0) {
-        fprintf(stderr, "Error: Producto %s no encontrado en '%s'.\n", product, filepath);
-        return result;
+        printf("Error: Producto %s no encontrado en '%s'.\n", product, filepath);
+        return;
     }
 
-    result.result = price;
-    asprintf(&result.output, "Precio total de un producto: %s >> %.2f\n", product, price);
+    printf("Precio total de un producto: %s >> %.2f\n", product, price);
 
-    return result;
 }
 
 
-void fecha(const char* ticket) {
+void fecha(char **params) {
+    
+    char *ticket = params[0];
 
     char filepath[MAX_LINE];
     snprintf(filepath, MAX_LINE, "ticketsData/%s.csv", ticket);
 
     FILE* file = fopen(filepath, "r");
     if (file == NULL) {
-        fprintf(stderr, "Error: No se pudo abrir el archivo '%s'.\n", filepath);
+        printf("Error: No se pudo abrir el archivo '%s'.\n", filepath);
         return;
     }
 
@@ -425,14 +402,16 @@ void fecha(const char* ticket) {
 }
 
 
-void supermercado(const char* ticket) {
+void supermercado(char **params) {
+
+    char *ticket = params[0];
 
     char filepath[MAX_LINE];
     snprintf(filepath, MAX_LINE, "ticketsData/%s.csv", ticket);
 
     FILE* file = fopen(filepath, "r");
     if (file == NULL) {
-        fprintf(stderr, "Error: No se pudo abrir el archivo '%s'.\n", filepath);
+        printf("Error: No se pudo abrir el archivo '%s'.\n", filepath);
         return;
     }
 
@@ -472,7 +451,10 @@ int compare_desc(const void* a, const void* b) {
 }
 
 
-void ordenar(const char* order, const char* ticket) {
+void ordenar(char **params) {
+
+    char *order = params[0];
+    char *ticket = params[1];
 
     char filepath[MAX_LINE];
     snprintf(filepath, MAX_LINE, "ticketsData/%s.csv", ticket);
@@ -480,7 +462,7 @@ void ordenar(const char* order, const char* ticket) {
 
     FILE* file = fopen(filepath, "r");
     if (file == NULL) {
-        fprintf(stderr, "Error: No se pudo abrir el archivo '%s'.\n", filepath);
+        printf("Error: No se pudo abrir el archivo '%s'.\n", filepath);
         return;
     }
 
@@ -530,13 +512,16 @@ void ordenar(const char* order, const char* ticket) {
 }
 
 
-void ver_ticket(const char* ticket) {
+void ver_ticket(char **params) {
+
+    char *ticket = params[0];
+    
     char filepath[MAX_LINE];
     snprintf(filepath, MAX_LINE, "ticketsRaw/%s.txt", ticket);
 
     FILE* file = fopen(filepath, "r");
     if (file == NULL) {
-        fprintf(stderr, "Error: No se pudo abrir el archivo '%s'.\n", filepath);
+        printf("Error: No se pudo abrir el archivo '%s'.\n", filepath);
         return;
     }
 
@@ -568,7 +553,11 @@ int compare_dates(struct tm date1, struct tm date2) {
 }
 
 
-TicketList desdehasta(const char* fecha1, const char* fecha2) {
+void desdehasta(char **params) {
+
+    char *fecha1 = params[0];
+    char *fecha2 = params[1];
+    
     TicketList result;
     result.tickets = malloc(0);
     result.count = 0;
@@ -579,8 +568,8 @@ TicketList desdehasta(const char* fecha1, const char* fecha2) {
 
     DIR* dir = opendir("ticketsData"); 
     if (dir == NULL) {
-        perror("No se pudo abrir el directorio ticketsData");
-        return result;  
+        printf("No se pudo abrir el directorio ticketsData");
+        return;  
     }
 
     struct dirent* entry;
@@ -627,7 +616,24 @@ TicketList desdehasta(const char* fecha1, const char* fecha2) {
     }
 
     closedir(dir); 
-    return result;
+    
+    if (result.count == 0) {
+        printf("No se encontraron tickets en el rango de fechas especificado.\n");
+        return;
+    }
+    
+    printf("Ticket encontrados entre las fechas indicadas:\n");
+
+    for (size_t i = 0; i < result.count; ++i) {
+        printf("%s", result.tickets[i]);
+
+        if (i < result.count - 1) {
+            printf(", ");
+        }
+    }
+
+    printf("\n");
+
 }
 
 void print_desdeHasta(TicketList result) {
@@ -648,3 +654,5 @@ void print_desdeHasta(TicketList result) {
 
     printf("\n");
 }
+
+

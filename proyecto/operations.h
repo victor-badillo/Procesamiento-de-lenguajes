@@ -15,17 +15,17 @@ typedef struct {
 } TicketList;
 
 void print_help();
-BasicResult caro(const char* ticket);
-BasicResult barato(const char* ticket);
-BasicResult total(const char* ticket);
-BasicResult media(const char* ticket);
-BasicResult precio(const char* product, const char* ticket);
-BasicResult totalproducto(const char* product, const char* ticket);
-void fecha(const char* ticket);
-void supermercado(const char* ticket);
-void ordenar(const char* order, const char* ticket);
-void ver_ticket(const char* ticket);
-TicketList desdehasta(const char* fecha1, const char* fecha2);
+void caro(char** params);
+void barato(char** params);
+void total(char** params);
+void media(char** params);
+void precio(char** params);
+void totalproducto(char** params);
+void fecha(char** params);
+void supermercado(char** params);
+void ordenar(char** params);
+void ver_ticket(char** params);
+void desdehasta(char** params);
 void print_desdeHasta(TicketList result);
 
 
