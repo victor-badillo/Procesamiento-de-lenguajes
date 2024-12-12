@@ -14,22 +14,6 @@ dicho ticket.
 
 Estos archivos se utilizan en la segunda fase, en la que se puede hacer consultas sobre tickets de la compra.
 La información a mostrar proviene de los archivos csv. El resultado de cada consulta se muestra por pantalla.
-Las consultas disponibles son las siguientes:
-
-caro(ticketX) -> [producto más caro]
-barato(ticketX) -> [producto más barato]
-total(ticketX) -> [precio total de un ticket]
-media(ticketX) -> [media de precio]
-precio("PRODUCTO", ticketX) -> [precio de un producto en un ticket]
-totalProducto("PRODUCTO", ticketX) -> [precio total de un producto de un ticket]
-fecha(ticketX) -> [fecha de compra de un ticket]
-supermercado(ticketX) -> [supermercado en el que se realizó la compra]
-ordenar(mayor/menor, ticketX) -> imprime por pantalla los productos ordenados por precio
-verticket(ticketX) -> imprime por pantalla el ticket [imprime el ticketX.txt] y no se puede combinar con nada.
-desdehasta(dd/mm/yyyyThh:mm, dd/mm/yyyyThh:mm,) -> imrpime los nombres de los tickets con fecha de compra entre
-						   las fechas introducidas
-ayuda -> [imprime información de ayuda]
-salir -> salir del programa
 
 En todo momento para los dos analizadores muestran y detallan el error que puedan encontrar durante el análisis.
 
@@ -70,6 +54,7 @@ Para tickets -> ticket.l y ticket.y
 Para consultas -> query.l, query.y, operations.c y operations.h
 
 
+
 3.- Analizador de tickets
 
 Este analizador se encarga de revisar que los tickets este correctamente escritos y genera archivos csv de dicho
@@ -104,7 +89,7 @@ TOTAL......:      9.38
 
 
 
-3.1 ticket.l
+3.1.- ticket.l
 
 Este documento se encarga de leer el archivo de entrada del ticket y generar los tokens necesarios para el
 análisis sintáctico. Los tokens capturados son y se centran en:
@@ -122,13 +107,13 @@ GOODBYE => línea de despedida después de los impuestos
 
 Los tokens HEADER, PURCHASEDATE, PHONE_NUMBER, TOTALPURCHASE, PRICE, NEGATIVE_PRICE Y PRODUCT guardan su valor
 como una cadena de caracteres. Esto con el objetivo de analizar que estén correctamente escritos y guardar su
-información en el archivo de salida csv en análisis sintáctico.
+información en el archivo de salida csv en el análisis sintáctico.
 
-En el caso de que haya elementos no reconocidos se imprime un mensaje por pantalla.
+En el caso de que haya elementos no reconocidos se imprime un mensaje por pantalla indicando el elemento.
 
 
 
-3.2 ticket.y
+3.2.- ticket.y
 
 Este documento se encarga de ver que los tokens obtenidos con el ticket.l esten correctamente colocados y
 formados. Para utlizar este archivo hay 2 formas en concreto. Si en el archivo Makefile para la variable PRUEBA
@@ -166,7 +151,7 @@ que cada elemento guarda el nombre del producto, la cantidad y el precio.
 
 
 
-3.3 Consideraciones
+3.3.- Consideraciones
 
 - Debe existir dos espacios de separación al menos entre los precios de las columnas de impuesto por la forma en
   la que se reconocen los nombres de los productos ya que estos pueden tener más de una palabra que los forme y
@@ -186,10 +171,12 @@ Producto;Cantidad;Precio
   análisis en este caso.
 - En el archivo csv se utiliza una línea para cada producto, guardando la cantidad de este y el precio total, no
   el precio de una unidad de ese producto.
+- No se indica la línea en la que sucedió el error ya que la mayoría de errores no provienen de una línea sino
+  de no existir en el documento. Al ser muy visual esto no aporta mayor información.
 
 
 
-3.4 Funcionamiento
+3.4.- Funcionamiento
 
 A continuación se muestran las salidas que darían algunos ejemplos de tickets mal escritos. Los tickets a probar
 son de /ticketsError.
@@ -199,15 +186,15 @@ Sintaxis de ticket incorrecta. Error: lo primero definido en un ticket debe ser 
 calle y empresa.
 
 ticket2.txt
-Carácter desconocido: :, en la línea 4
-Sintaxis de ticket incorrecta. Error en línea 4: debe haber una separacion (-) entre la empresa y fecha/hora/tlf.
+Carácter desconocido: : 
+Sintaxis de ticket incorrecta. Error: debe haber una separacion (-) entre la empresa y fecha/hora/tlf.
 
 ticket3.txt
-Sintaxis de ticket incorrecta. Error en línea 22: El nummero de telefono debe tener 9 digitos.
+Sintaxis de ticket incorrecta. Error: El nummero de telefono debe tener 9 digitos.
 
 ticket4.txt
-Sintaxis de ticket incorrecta. Error en línea 22: La fecha y hora proporcionadas no pueden ser posteriores a la
-fecha y hora actual.
+Sintaxis de ticket incorrecta. Error: La fecha y hora proporcionadas no pueden ser posteriores a la fecha y hora
+actual.
 
 ticket5.txt
 Sintaxis de ticket incorrecta. Error: No son válidos precios negativos [-1.82] para los productos
@@ -227,105 +214,148 @@ Sintaxis de ticket incorrecta. Error: Falta la linea de agradecimiento y despedi
 
 
 
+4.- Análisis de consultas
+
+Este analizador se encarga de revisar que las consultas estén bien formadas y de mostrar por pantalla el resultado
+de la consulta ejecutada o mostrar el error.
+
+Las consultas disponibles son las siguientes:
+
+caro(ticketX) -> [producto más caro]
+barato(ticketX) -> [producto más barato]
+total(ticketX) -> [precio total de un ticket]
+media(ticketX) -> [media de precio]
+precio("PRODUCTO", ticketX) -> [precio de un producto en un ticket]
+totalProducto("PRODUCTO", ticketX) -> [precio total de un producto de un ticket]
+fecha(ticketX) -> [fecha de compra de un ticket]
+supermercado(ticketX) -> [supermercado en el que se realizó la compra]
+ordenar(mayor/menor, ticketX) -> imprime por pantalla los productos ordenados por precio
+verticket(ticketX) -> imprime por pantalla el ticket [imprime el ticketX.txt] y no se puede combinar con nada.
+desdehasta(dd/mm/yyyyThh:mm, dd/mm/yyyyThh:mm,) -> imrpime los nombres de los tickets con fecha de compra entre
+						   las fechas introducidas
+ayuda -> [imprime información de ayuda]
+salir -> salir del programa
+
+
+Los parámetros para las consultas pueden ser un ticket, una fecha, orden y un producto.
+
+ticketX, siendo X un numero entero
+
+dd/mm/yyyyThh:mm, fecha
+
+mayor/menor, tipo de orden 
+
+"UN PRODUCTO", nombre del producto que corresponde al que aparece en el ticket
+
+
+4.1.- query.l
+
+Este documento se encarga de leer la consulta y capturar los tokens correspondientes. Estos tokens principalmente
+son el nombre de las consultas, los paréntesis, la coma de separación entre parámetros de consultas y los
+tokens de los parámetros.
+
+Para los tokens ORDER, FECHA_FORM, TICKET y PRODUCT se guarda su valor como cadena de caracteres ya que estos
+valores posteriormente se utilizarán para las funciones que realizan la consulta.
 
 
 
+4.2.- query.y
+
+
+Este documento se encarga de ver que los tokens obtenidos con el query.l esten correctamente colocados y
+formados. Para utlizar este archivo hay 2 formas en concreto. La primera forma consiste en utilizar como argumento
+un archivo ya sea de /querys o de /querysError. La segunda forma sería a traves de la entrada estándar en la que
+se puede interactuar con el generador de consultas pudiendo introducir varias consultas.
+
+Para cada consulta se muestra el resultado obtenido o el error generado.
+
+Durante el análisis se comprueba que los elementos este correctamente formados y colocados. Los errores que se
+comprueban son:
+
+- Consulta no acabada con ;;.
+- Elementos no existentes para realizar consultas como consultas no existentes.
+- Falta un paréntesis de apertura.
+- Falta un paréntesis de cierre.
+- Faltan los dos paréntesis de cierre.
+- Tipo de parámetro incorrecto.
+- Falta la coma de separación entre parámetros.
+- Faltan parámetros para la consulta.
+
+
+La estructura de este analizador consiste en empezar el análisis buscando la consulta a realizar. Para cada
+consulta se asocia un puntero a funciones a su correspondiente función. Continuando el análisis se verifica que
+los parámetros estén correctamente introducidos, encerrando bien entre paréntesis, separando con coma los
+parámetros y usando el tipo de parámetro correcto.
+
+Al encontrar un parámetro correcto se guarda en una lista de cadena de caracteres ya que todos los tipos de
+parámetros se tratan como cadena de caracteres. Esto se hace con el objetivo de simplificar el código y que la
+llamada a funciones sea homogenea.
+
+En todo momento si sucede algun error sintáctico, en la función yyerror() se leen los tokens que puedan quedar
+después del elemento que causó el error ya que esto podría causar errores para posteriores consultas. Además.
+despues de cada llamada a yyerror() se aborta con YYABORT para terminar el análisis y volver al bucle.
 
 
 
+4.3.- operations.c
+
+Este documento contiene la implementación de las funciones que realizan las consultas utilizando los archivos csv
+generados por el analizador de tickets.
 
 
 
+4.4.- operations.h
+
+Este documento contiene las firmas de las funciones de operations.c y macros definidas.
 
 
 
-En todo momento 
+4.5.- Consideraciones
+
+- Los nombres de las consultas pueden ser cualquier combinación de mayúsculas y minúsculas.
+- Los valores para el tipo de ordenación solo pueden ser "mayor" y "menor".
+- Todas las consultas excepto salir y ayuda deben acabar en ;;.
+- Caracteres no reconocidos se ignoran ya que no nos interesa capturar esto ya que los elementos posibles son muy
+  restringidos y no aporta nada ya que durante el análisis sintáctico se captura este error y se indica por
+  pantalla.
+- Las consultas son de una línea y no se permite combinaciones de consultas. En un principio podría sonar
+  interesante pero no aporta mayor información ya que con las consultas disponibles se abarca una gran capacidad
+  de consulta y además la información de un ticket que se maneja no puede ser muy variada.
+- Los nombres de los productos deben ser iguales a los de los tickets originales.
+- En la entrada estándar al introducir una línea vacía se ingora. Lo mismo con líneas con espacios y nada más.
+- Se utiliza una flag para salir del programa correctamente limpiando la memoria utilizanda durante este.
 
 
-Considetaciones:
+4.4.- Funcionamiento
 
-Al encontrar un error en el análisis de los tickets para automaticamente
-Si en algun momento hay un error de sintaxis, el archivo csv generado se elimina
-
-Errores ticket
-
-ticket1.txt
-
-Sintaxis de ticket incorrecta. Error: lo primero definido en un ticket debe ser la cabecera con el supermercado, calle y empresa.
-
-ticket2.txt
-
-Carácter desconocido: :, en la línea 4
-Sintaxis de ticket incorrecta. Error en línea 4: debe haber una separacion (-) entre la empresa y fecha/hora/tlf.
-
-ticket3.txt
-
-Sintaxis de ticket incorrecta. Error en línea 22: El nummero de telefono debe tener 9 digitos.
-
-ticket4.txt
-
-Sintaxis de ticket incorrecta. Error en línea 22: La fecha y hora proporcionadas no pueden ser posteriores a la fecha y hora actual.
-
-ticket5.txt
-
-Sintaxis de ticket incorrecta. Error: No son válidos precios negativos [-1.82] para los productos
-
-ticket6.txt
-
-Sintaxis de ticket incorrecta. Error: precio total de compra [15.00] no es igual a la suma de precios de los productos de la compra [9.38]
-
-ticket7.txt
-
-Sintaxis de ticket incorrecta. Error: La suma de base + IVA (2.42) no coincide con el total proporcionado 1.82
-
-ticket8.txt
-
-Sintaxis de ticket incorrecta. Error: La suma de base + IVA (1.82) no coincide con el total proporcionado 2.00
-
-ticket9.txt
-
-Sintaxis de ticket incorrecta. Error: Falta la linea de agradecimiento y despedida
-
-
-
-QUERYS
-
+A continuación se muestra la salida esperada para los ejemplos de consultas de /querys.
 
 query1.txt
-
 Producto más caro: "PULEVA OMEGA-3" >> 3.18
 
 query2.txt
-
 Producto más barato: "CERVEZA 1906 RESER" >> 1.82
 
 query3.txt
-
 Precio total de ticket1: 9.38
 
 query4.txt
-
 Media de precios de ticket1: 1.56
 
 query5.txt
-
 Fecha de compra de 'ticket1': 16/11/2024T18:29
 
 query6.txt
-
 Supermercado de compra de 'ticket1': 
 "**     GADIS O BURGO      **|      AV. JUAN CARLOS I|     MERCARTABRIA,S.L.U.|"
 
 query7.txt
-
 Precio total de un producto: "PULEVA OMEGA-3" >> 3.18
 
 query8.txt
-
 Precio de un producto: "PULEVA OMEGA-3" >> 1.59
 
 query9.txt
-
 Productos ordenados por precio (mayor):
 "PULEVA OMEGA-3"                3.18
 "HARINA/MAIZ PAN 1KG"           2.40
@@ -333,12 +363,10 @@ Productos ordenados por precio (mayor):
 "CERVEZA 1906 RESER"            1.82
 
 query10.txt
-
 Ticket encontrados entre las fechas indicadas:
 ticket5, ticket2
 
 query11.txt
-
   **     GADIS O BURGO      **
       AV. JUAN CARLOS I
      MERCARTABRIA,S.L.U.
@@ -363,86 +391,72 @@ TOTAL......:      9.38
   *  GRACIAS POR SU VISITA  *
 
 query12.txt
+Comandos disponibles y su uso:
+-------------------------------------------------------------------------------------
+Operaciones básicas (no combinables):
+  caro(ticketX) -> double
+      - Devuelve el producto más caro del ticket en total.
+  barato(ticketX) -> double
+      - Devuelve el producto más barato del ticket en total.
+  total(ticketX) -> double
+      - Devuelve el precio total de la compra.
+  media(ticketX) -> double
+      - Devuelve la media de precio de los productos en un ticket.
+  precio(producto, ticketX) -> double
+      - Devuelve el precio de un producto específico en un ticket.
+  totalProducto(producto, ticketX) -> double
+      - Devuelve el precio total de un producto en un ticket (cantidad * precio).
+  fecha(ticketX) -> void
+      - Imprime la fecha de compra de un ticket.
+  supermercado(ticketX) -> void
+      - Imprime el supermercado en el que se realizó la compra.
+  ordenar(mayor/menor, ticketX)
+      - Imprime por pantalla los productos de un ticket ordenados por precio de mayor a menor o viceversa.
+  verTicket(ticketX) -> void
+      - Imprime por pantalla el contenido del ticket en formato de archivo .txt.
+  salir
+      - Salir del generador de consultas sobre tickets de la compra.
 
-(Información con los comandos disponibles)
+Notas:
+  - Para todas las operaciones se esperan nombres de tickets en el formato "ticketX", donde X es un número entero.
+  - Los nombres de productos van entre comillas dobles y en mayusculas.
+  - El formato de fechas es dd/mm/yyyyThh:mm.
+-------------------------------------------------------------------------------------
 
 
 
-Errores querys:
+Tambien se muestra la salida esperada para algunos ejemplos de consultas mal formadas.
 
 query1.txt
-
 Sintaxis de consulta incorrecta. Error: Todas las consultas deben acabar en ;;
 
 query2.txt
-
-Sintaxis de consulta incorrecta. Error: Sintaxis operaciones basicas: op(arg1,...). Usar ayuda para ver las consultas disponibles
+Sintaxis de consulta incorrecta. Error: Sintaxis operaciones basicas: op(arg1,...). Usar ayuda para ver las
+consultas disponibles
 
 query3.txt
-
 Sintaxis de consulta incorrecta. Error: Falta el paréntesis de apertura ( para los parámetros
 
 query4.txt
-
 Sintaxis de consulta incorrecta. Error: Falta el paréntesis de cierre ) para los parámetros
 
 query5.txt
-
 Sintaxis de consulta incorrecta. Error: Falta los paréntesis () para los parámetros
 
 query6.txt
-
 Sintaxis de consulta incorrecta. Error: Tipo de parámetro incorrecto, solo válido (ticketX)
 
 query7.txt
-
 Sintaxis de consulta incorrecta. Error: Falta la coma de separación entre los parámetros
 
 query8.txt
-
 Sintaxis de consulta incorrecta. Error: Falta el segundo parámetro (ticketX)
 
 query9.txt
-
 Sintaxis de consulta incorrecta. Error: Faltan parámetros. Usar ayuda para más información.
 
 query10.txt
-
-Sintaxis de consulta incorrecta. Error: Tipo de parámetro incorrecto, solo válido (dd/mm/yyyyThh:mm,dd/mm/yyyyThh:mm)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Consideraciones:
-
-- Al encontrar un error sintáctico sale del programa.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Sintaxis de consulta incorrecta. Error: Falta el segundo parámetro (dd/mm/yyyyThh:mm)
 
 
 

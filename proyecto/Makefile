@@ -2,11 +2,11 @@ FUENTE = ticket
 FUENTE2 = query
 FUENTE3 = operations
 PRUEBA = ticketsRaw
-PRUEBA2 = querys/query12.txt
+PRUEBA2 = querys/query1.txt
 LIB = lfl -lm
 LIB2 = lfl
 
-all: query
+all: ticket query
 
 ticket:
 	flex $(FUENTE).l
@@ -17,7 +17,7 @@ ticket:
 query:
 	flex $(FUENTE2).l
 	mv lex.yy.c $(FUENTE2).lex.yy.c
-	bison -o $(FUENTE2).tab.c $(FUENTE2).y -yd -Wcounterexamples
+	bison -o $(FUENTE2).tab.c $(FUENTE2).y -yd
 	gcc -o $(FUENTE2) $(FUENTE2).lex.yy.c $(FUENTE2).tab.c $(FUENTE3).c -$(LIB2) -ly
 
 t1:

@@ -10,33 +10,36 @@ void print_help() {
     printf("-------------------------------------------------------------------------------------\n");
     
     printf("Operaciones básicas (no combinables):\n");
-    printf("  caro(ticketX) -> double\n");
+    printf("  caro(ticketX)\n");
     printf("      - Devuelve el producto más caro del ticket en total.\n");
     
-    printf("  barato(ticketX) -> double\n");
+    printf("  barato(ticketX)\n");
     printf("      - Devuelve el producto más barato del ticket en total.\n");
     
-    printf("  total(ticketX) -> double\n");
+    printf("  total(ticketX)\n");
     printf("      - Devuelve el precio total de la compra.\n");
     
-    printf("  media(ticketX) -> double\n");
+    printf("  media(ticketX)\n");
     printf("      - Devuelve la media de precio de los productos en un ticket.\n");
     
-    printf("  precio(producto, ticketX) -> double\n");
+    printf("  precio(\"PRODUCTO\", ticketX)\n");
     printf("      - Devuelve el precio de un producto específico en un ticket.\n");
     
-    printf("  totalProducto(producto, ticketX) -> double\n");
+    printf("  totalProducto(\"PRODUCTO\", ticketX)\n");
     printf("      - Devuelve el precio total de un producto en un ticket (cantidad * precio).\n");
     
-    printf("  fecha(ticketX) -> void\n");
+    printf("  fecha(ticketX)\n");
     printf("      - Imprime la fecha de compra de un ticket.\n");
     
-    printf("  supermercado(ticketX) -> void\n");
+    printf("  supermercado(ticketX)\n");
     printf("      - Imprime el supermercado en el que se realizó la compra.\n");
     printf("  ordenar(mayor/menor, ticketX)\n");
     printf("      - Imprime por pantalla los productos de un ticket ordenados por precio de mayor a menor o viceversa.\n");
     
-    printf("  verTicket(ticketX) -> void\n");
+    printf("  desdehasta(dd/mm/yyyyThh:mm, dd/mm/yyyyThh:mm)\n");
+    printf("      - Imprime el supermercado en el que se realizó la compra.\n");
+    
+    printf("  verticket(ticketX)\n");
     printf("      - Imprime por pantalla el contenido del ticket en formato de archivo .txt.\n");
     
     printf("  salir\n");
@@ -44,7 +47,7 @@ void print_help() {
     
     printf("\nNotas:\n");
     printf("  - Para todas las operaciones se esperan nombres de tickets en el formato \"ticketX\", donde X es un número entero.\n");
-    printf("  - Los nombres de productos van entre comillas dobles y en mayusculas.\n");
+    printf("  - Los nombres de productos van entre comillas dobles y en mayúsculas.\n");
     printf("  - El formato de fechas es dd/mm/yyyyThh:mm.\n");
     printf("-------------------------------------------------------------------------------------\n");
 }

@@ -35,27 +35,27 @@ salir (?i:salir)
 
 %%
 {ws}		{ }
-{salir}		{ printf("SALIR\n"); return SALIR; }
-{end}		{ printf("END\n"); return END; }
-{lbr}		{ printf("(\n"); return LBR; }
-{rbr}  		{ printf(")\n"); return RBR; }
-{comma}		{ printf(",\n"); return COMMA; }
-{caro}		{ printf("CARO\n"); return CARO; }
-{barato}  	{ printf("BARATO\n"); return BARATO; }
-{orden}		{ yylval.str = strdup(yytext); printf("mayor/menor\n"); return ORDER; }
-{ordenar}  	{ printf("ORDENAR\n"); return ORDENAR; }
-{total}		{ printf("TOTAL\n"); return TOTAL;  }
-{media}		{ printf("MEDIA\n"); return MEDIA; }
-{fecha}		{ printf("FECHA\n"); return FECHA;  }
-{supermercado}	{ printf("SUPERMERCADO\n"); return SUPERMERCADO; }
-{desdehasta}	{ printf("DESDEHASTA\n"); return DESDE_HASTA; }
-{totalproducto}	{ printf("TOTALPRODUCTO\n");  return TOTAL_PRODUCTO; }
-{verticket}	{ printf("VERTICKET\n"); return VER_TICKET; }
-{ayuda}		{ printf("AYUDA\n");  return AYUDA;}
-{precio}	{ printf("PRECIO\n");  return PRECIO; }
-{fechaform}	{ yylval.str = strdup(yytext);  printf("fechaXXX\n"); return FECHA_FORM; }
-{ticket}	{ yylval.str = strdup(yytext);  printf("ticketXXX\n"); return TICKET; }
-{product_text}	{ yylval.str = strdup(yytext);  printf("productoXXX\n"); return PRODUCT; }
+{salir}		{ return SALIR; }
+{end}		{ return END; }
+{lbr}		{ return LBR; }
+{rbr}  		{ return RBR; }
+{comma}		{ return COMMA; }
+{caro}		{ return CARO; }
+{barato}  	{ return BARATO; }
+{orden}		{ yylval.str = strdup(yytext); return ORDER; }
+{ordenar}  	{ return ORDENAR; }
+{total}		{ return TOTAL;  }
+{media}		{ return MEDIA; }
+{fecha}		{ return FECHA;  }
+{supermercado}	{ return SUPERMERCADO; }
+{desdehasta}	{ return DESDE_HASTA; }
+{totalproducto}	{ return TOTAL_PRODUCTO; }
+{verticket}	{ return VER_TICKET; }
+{ayuda}		{ return AYUDA;}
+{precio}	{ return PRECIO; }
+{fechaform}	{ yylval.str = strdup(yytext); return FECHA_FORM; }
+{ticket}	{ yylval.str = strdup(yytext); return TICKET; }
+{product_text}	{ yylval.str = strdup(yytext); return PRODUCT; }
 .               { }
 %%
 
