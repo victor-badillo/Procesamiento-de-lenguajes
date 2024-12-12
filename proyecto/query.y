@@ -21,8 +21,6 @@ char **params = NULL;
 
 %union {
     char* str;
-    BasicResult basicResult;
-    TicketList ticketList;
 }
 
 %token CARO BARATO TOTAL MEDIA PRECIO TOTAL_PRODUCTO FECHA SUPERMERCADO DESDE_HASTA VER_TICKET ORDENAR AYUDA SALIR

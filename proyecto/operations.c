@@ -558,9 +558,8 @@ void desdehasta(char **params) {
     char *fecha1 = params[0];
     char *fecha2 = params[1];
     
-    TicketList result;
-    result.tickets = malloc(0);
-    result.count = 0;
+    char **tickets = NULL;
+    size_t count = 0;
 
 
     struct tm start_date = parse_date(fecha1);
@@ -601,9 +600,9 @@ void desdehasta(char **params) {
 		                    char* ticket_name = strtok(entry->d_name, ".");
 
 		                    // Añadir el ticket a la lista
-		                    result.tickets = realloc(result.tickets, (result.count + 1) * sizeof(char*));
-		                    result.tickets[result.count] = strdup(ticket_name); 
-		                    result.count++;
+		                    tickets = realloc(tickets, (count + 1) * sizeof(char *));
+                                    tickets[count] = strdup(ticket_name);
+                                    count++;
 		                }
 		            }
 		            break; 
@@ -617,42 +616,26 @@ void desdehasta(char **params) {
 
     closedir(dir); 
     
-    if (result.count == 0) {
+    if (count == 0) {
         printf("No se encontraron tickets en el rango de fechas especificado.\n");
         return;
     }
     
     printf("Ticket encontrados entre las fechas indicadas:\n");
 
-    for (size_t i = 0; i < result.count; ++i) {
-        printf("%s", result.tickets[i]);
-
-        if (i < result.count - 1) {
+    for (size_t i = 0; i < count; ++i) {
+        printf("%s", tickets[i]);
+        if (i < count - 1) {
             printf(", ");
         }
+        free(tickets[i]); // Liberar memoria del nombre del ticket
     }
+
+    free(tickets);
 
     printf("\n");
 
 }
 
-void print_desdeHasta(TicketList result) {
-    if (result.count == 0) {
-        printf("No se encontraron tickets en el rango de fechas especificado.\n");
-        return;
-    }
-    
-    printf("Ticket encontrados entre las fechas indicadas:\n");
-
-    for (size_t i = 0; i < result.count; ++i) {
-        printf("%s", result.tickets[i]);
-
-        if (i < result.count - 1) {
-            printf(", ");
-        }
-    }
-
-    printf("\n");
-}
 
 
