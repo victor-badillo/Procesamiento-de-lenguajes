@@ -67,8 +67,8 @@ query:
 
 
 args1:
-    LBR params1 { yyerror("Error: Falta el parentesis de cierre ) para los parámetros"); YYABORT; }
-    | params1 RBR { yyerror("Error: Falta el parentesis de apertura ( para los parámetros");  YYABORT; }
+    LBR params1 { yyerror("Error: Falta el paréntesis de cierre ) para los parámetros"); YYABORT; }
+    | params1 RBR { yyerror("Error: Falta el paréntesis de apertura ( para los parámetros");  YYABORT; }
     | params1 {  yyerror("Error: Falta los paréntesis () para los parámetros"); YYABORT;  }
     | LBR params1 RBR { }
 ;
@@ -83,8 +83,8 @@ params1:
 
 
 args2:
-    LBR params2 { yyerror("Error: Falta el parentesis de cierre ) para los parámetros"); YYABORT; }
-    | params2 RBR { yyerror("Error: Falta el parentesis de apertura ( para los parámetros"); YYABORT; }
+    LBR params2 { yyerror("Error: Falta el paréntesis de cierre ) para los parámetros"); YYABORT; }
+    | params2 RBR { yyerror("Error: Falta el paréntesis de apertura ( para los parámetros"); YYABORT; }
     | params2 {  yyerror("Error: Falta los paréntesis () para los parámetros"); YYABORT; }
     | LBR params2 RBR {}
 ;
@@ -108,8 +108,8 @@ params2:
 
 
 args3:
-    LBR params3 { yyerror("Error: Falta el parentesis de cierre ) para los parámetros"); YYABORT; }
-    | params3 RBR { yyerror("Error: Falta el parentesis de apertura ( para los parámetros"); YYABORT; }
+    LBR params3 { yyerror("Error: Falta el paréntesis de cierre ) para los parámetros"); YYABORT; }
+    | params3 RBR { yyerror("Error: Falta el paréntesis de apertura ( para los parámetros"); YYABORT; }
     | params3 {  yyerror("Error: Falta los paréntesis () para los parámetros"); YYABORT; }
     | LBR params3 RBR { }
 ;
@@ -132,8 +132,8 @@ params3:
 
 
 args4:
-    LBR params4 { yyerror("Error: Falta el parentesis de cierre ) para los parámetros"); YYABORT;}
-    | params4 RBR { yyerror("Error: Falta el parentesis de apertura ( para los parámetros"); YYABORT; }
+    LBR params4 { yyerror("Error: Falta el paréntesis de cierre ) para los parámetros"); YYABORT;}
+    | params4 RBR { yyerror("Error: Falta el paréntesis de apertura ( para los parámetros"); YYABORT; }
     | params4 {  yyerror("Error: Falta los paréntesis () para los parámetros"); YYABORT; }
     | LBR params4 RBR {}
 ;
