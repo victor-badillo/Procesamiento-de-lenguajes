@@ -180,6 +180,17 @@ bool is_only_whitespace(const char *str) {
     return true;  // Todos los caracteres son espacios, tabulaciones o saltos de línea
 }
 
+void free_params(char **params) {
+    if (params) {
+        for (int i = 0; params[i] != NULL; i++) {
+            free(params[i]);
+        }
+        free(params);
+    }
+    func_ptr = NULL;
+}
+
+
 int main(int argc, char *argv[]) {
    extern FILE *yyin;
    char input[MAX_INPUT_SIZE];
@@ -218,12 +229,7 @@ int main(int argc, char *argv[]) {
 			
 	    if (exit_program) {
                 printf("Cerrando generador de consultas sobre tickets de la compra...\n");
-                for (int i = 0; params != NULL && params[i] != NULL; i++) {
-		    free(params[i]);  //Liberar las cadenas almacenadas
-		}
-		free(params);
-		func_ptr = NULL;
-		
+                free_params(params);
             	break;
             }
         		

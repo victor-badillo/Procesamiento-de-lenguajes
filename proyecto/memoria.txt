@@ -324,6 +324,7 @@ Este documento contiene las firmas de las funciones de operations.c y macros def
 - Los nombres de los productos deben ser iguales a los de los tickets originales.
 - En la entrada estándar al introducir una línea vacía se ingora. Lo mismo con líneas con espacios y nada más.
 - Se utiliza una flag para salir del programa correctamente limpiando la memoria utilizanda durante este.
+- Se pueden introducir dos fechas incoherentes para desdehasta().
 
 
 4.4.- Funcionamiento
@@ -394,38 +395,41 @@ query12.txt
 Comandos disponibles y su uso:
 -------------------------------------------------------------------------------------
 Operaciones básicas (no combinables):
-  caro(ticketX) -> double
+  caro(ticketX)
       - Devuelve el producto más caro del ticket en total.
-  barato(ticketX) -> double
+  barato(ticketX)
       - Devuelve el producto más barato del ticket en total.
-  total(ticketX) -> double
+  total(ticketX)
       - Devuelve el precio total de la compra.
-  media(ticketX) -> double
+  media(ticketX)
       - Devuelve la media de precio de los productos en un ticket.
-  precio(producto, ticketX) -> double
+  precio("PRODUCTO", ticketX)
       - Devuelve el precio de un producto específico en un ticket.
-  totalProducto(producto, ticketX) -> double
+  totalProducto("PRODUCTO", ticketX)
       - Devuelve el precio total de un producto en un ticket (cantidad * precio).
-  fecha(ticketX) -> void
+  fecha(ticketX)
       - Imprime la fecha de compra de un ticket.
-  supermercado(ticketX) -> void
+  supermercado(ticketX)
       - Imprime el supermercado en el que se realizó la compra.
   ordenar(mayor/menor, ticketX)
       - Imprime por pantalla los productos de un ticket ordenados por precio de mayor a menor o viceversa.
-  verTicket(ticketX) -> void
+  desdehasta(dd/mm/yyyyThh:mm, dd/mm/yyyyThh:mm)
+      - Imprime la lista de tickets con fecha entre las fechas introducidas.
+  verticket(ticketX)
       - Imprime por pantalla el contenido del ticket en formato de archivo .txt.
   salir
       - Salir del generador de consultas sobre tickets de la compra.
 
 Notas:
   - Para todas las operaciones se esperan nombres de tickets en el formato "ticketX", donde X es un número entero.
-  - Los nombres de productos van entre comillas dobles y en mayusculas.
+  - Los nombres de productos van entre comillas dobles y en mayúsculas.
   - El formato de fechas es dd/mm/yyyyThh:mm.
 -------------------------------------------------------------------------------------
 
 
 
-Tambien se muestra la salida esperada para algunos ejemplos de consultas mal formadas.
+
+Tambien se muestra la salida esperada para algunos ejemplos de consultas mal formadas en /querysError.
 
 query1.txt
 Sintaxis de consulta incorrecta. Error: Todas las consultas deben acabar en ;;

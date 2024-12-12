@@ -37,7 +37,7 @@ void print_help() {
     printf("      - Imprime por pantalla los productos de un ticket ordenados por precio de mayor a menor o viceversa.\n");
     
     printf("  desdehasta(dd/mm/yyyyThh:mm, dd/mm/yyyyThh:mm)\n");
-    printf("      - Imprime el supermercado en el que se realizó la compra.\n");
+    printf("      - Imprime la lista de tickets con fecha entre las fechas introducidas.\n");
     
     printf("  verticket(ticketX)\n");
     printf("      - Imprime por pantalla el contenido del ticket en formato de archivo .txt.\n");
