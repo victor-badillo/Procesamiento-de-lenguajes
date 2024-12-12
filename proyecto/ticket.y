@@ -10,7 +10,7 @@
 #include <dirent.h>
 #include <time.h>
 
-#define MAX_PRODUCTS 100
+#define MAX_PRODUCTS 500
 
 typedef struct {
     char product_name[256];

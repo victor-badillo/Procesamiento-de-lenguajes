@@ -25,20 +25,20 @@ header {supermarket}[0-9A-ZÁÉÍÓÚÑÇ,./ \n]+
 
 %%
 {ws}		{ }
-{header}  	{ yylval.str = strdup(yytext); printf("HEADER\n"); return HEADER; }
-{purchaseDate}  { yylval.str = strdup(yytext); printf("PURCHASEDATE\n"); return PURCHASEDATE; }
-{tlf}		{ yylval.str = strdup(yytext); printf("TELEFONO\n"); return PHONE_NUMBER; }
-{separate}	{ printf("SEPARATE\n"); return SEPARATE; }
-{separate2}	{ printf("SEPARATE2222\n"); return SEPARATE2; }
-{totalPurchase}	{ yylval.str = strdup(yytext); printf("TOTALPURCHASE\n"); return TOTALPURCHASE; }
-{base}		{ printf("BASE\n"); return BASE; }
-{iva}		{ printf("IVA\n"); return IVA; }
-{cuota}		{ printf("CUOTA\n"); return CUOTA; }
-{total}		{ printf("TOTAL\n");  return TOTAL; }
-{price}		{ yylval.str = strdup(yytext); printf("PRICE\n"); return PRICE;}
-{negativePrice}	{ yylval.str = strdup(yytext);  printf("NEGATIVE_PRICE\n"); return NEGATIVE_PRICE; }
-{goodbye}	{ printf("GOODBYE\n"); return GOODBYE; }
-{product}	{ yylval.str = strdup(yytext); printf("PRODUCT\n"); return PRODUCT; }
-.               { printf("Carácter desconocido: %s, en la línea %d\n", yytext, yylineno); }
+{header}  	{ yylval.str = strdup(yytext); return HEADER; }
+{purchaseDate}  { yylval.str = strdup(yytext); return PURCHASEDATE; }
+{tlf}		{ yylval.str = strdup(yytext); return PHONE_NUMBER; }
+{separate}	{ return SEPARATE; }
+{separate2}	{ return SEPARATE2; }
+{totalPurchase}	{ yylval.str = strdup(yytext); return TOTALPURCHASE; }
+{base}		{ return BASE; }
+{iva}		{ return IVA; }
+{cuota}		{ return CUOTA; }
+{total}		{ return TOTAL; }
+{price}		{ yylval.str = strdup(yytext); return PRICE;}
+{negativePrice}	{ yylval.str = strdup(yytext); return NEGATIVE_PRICE; }
+{goodbye}	{ return GOODBYE; }
+{product}	{ yylval.str = strdup(yytext); return PRODUCT; }
+.               { printf("Carácter desconocido: %s \n", yytext); }
 %%
 
