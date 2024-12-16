@@ -314,7 +314,8 @@ Este documento contiene las firmas de las funciones de operations.c y macros def
 
 - Los nombres de las consultas pueden ser cualquier combinación de mayúsculas y minúsculas.
 - Los valores para el tipo de ordenación solo pueden ser "mayor" y "menor".
-- Todas las consultas excepto salir y ayuda deben acabar en ;;.
+- Todas las consultas deben acabar en ;;.
+- salir y ayuda no tienen parámetros.
 - Caracteres no reconocidos se ignoran ya que no nos interesa capturar esto ya que los elementos posibles son muy
   restringidos y no aporta nada ya que durante el análisis sintáctico se captura este error y se indica por
   pantalla.
